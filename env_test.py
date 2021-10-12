@@ -101,8 +101,8 @@ K1=np.zeros(300).astype(np.float)
 K2=np.zeros(300).astype(np.float)
 runs=100
 for turns in range(runs):
-    #Q=np.ones((2,12))
-    Q=np.zeros((2,12))
+    Q=np.ones((2,12))
+    #Q=np.zeros((2,12))
     Q[1,0]=-1e6
     Q[1,1]=-1e6
     s=env.reset()
@@ -123,14 +123,14 @@ for turns in range(runs):
     cum=0
     for i in range(e1.shape[0]):
         cum+=e1[i]
-        k1[i]=cum/i
+        k1[i]=cum/(i+1)
 
     e2=np.array(episode_lengths2)-1
     k2=e2.astype(np.float)
     cum=0
     for i in range(e2.shape[0]):
         cum+=e2[i]
-        k2[i]=cum/i
+        k2[i]=cum/(i+1)
     K1+=k1
     K2+=k2
 K1/=runs
