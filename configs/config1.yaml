@@ -1,7 +1,8 @@
 name: "test"
 seeds: [0,1]
-env: "WindyGridworldEnv" # ["WindyGridworldEnv"]
+env: "BasicEnv2" # ["WindyGridworldEnv", "BasicEnv2"]
 policy: "EpsilonGreedy" # ["EpsilonGreedy"]
-q_learning_variant: "vanilla" # ["vanilla", "double"]
 epsilon: 0.1
+alpha: 0.5
+gamma: 1
 num_iter: 100

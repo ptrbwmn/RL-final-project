@@ -1,4 +1,4 @@
-from windy_gridworld import WindyGridworldEnv
+from environments import WindyGridworldEnv, BasicEnv2
 from policy import EpsilonGreedyPolicy, EpsilonGreedyPolicy_Double_Q
 from q_learning import sarsa, q_learning, double_q_learning
 
@@ -15,6 +15,8 @@ def run_setup(config, q_learning_variant):
     env = config['env']
     if env == "WindyGridworldEnv":
         env = WindyGridworldEnv()
+    elif env == "BasicEnv2":
+        env = BasicEnv2()
     else:
         raise NotImplementedError
     
