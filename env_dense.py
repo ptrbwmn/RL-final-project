@@ -1,6 +1,22 @@
 from gym_minigrid.register import register
 from gym_minigrid.envs.empty import EmptyEnv
 import numpy as np
+import hashlib
+
+
+def hash_obs(observation, size=16):
+    """Compute a hash that uniquely identifies the current state of the environment.
+    :param size: Size of the hashing
+    """
+    sample_hash = hashlib.sha256()
+
+    img = observation['image']
+    agent_dir = observation['direction']
+    to_encode = [img.tolist(), agent_dir]
+    for item in to_encode:
+        sample_hash.update(str(item).encode('utf8'))
+
+    return sample_hash.hexdigest()[:size]
 
 
 class EmptyEnvDenseReward(EmptyEnv):
@@ -9,6 +25,8 @@ class EmptyEnvDenseReward(EmptyEnv):
                  agent_start_pos=(1, 1),
                  agent_start_dir=0):
         super().__init__(size, agent_start_pos, agent_start_dir)
+
+        self.obs_idx = dict()
 
     def step(self, action):
         # TODO: add hashing here
@@ -77,12 +95,28 @@ class EmptyEnvDenseReward(EmptyEnv):
 
         obs = self.gen_obs()
 
-        return obs, reward, done, {}
+        # hash the observation and map to unique index
+        obs = hash_obs(obs)
+        if obs not in self.obs_idx:
+            self.obs_idx[obs] = len(self.obs_idx)
+
+        return self.obs_idx[obs], reward, done, {}
+
+    def custom_reset(self):
+
+        obs = self.reset()
+
+        obs = hash_obs(obs)
+        if obs not in self.obs_idx:
+            self.obs_idx[obs] = len(self.obs_idx)
+
+        return self.obs_idx[obs]
 
 
 class EmptyEnvDense5x5(EmptyEnvDenseReward):
     def __init__(self, **kwargs):
         super().__init__(size=5, **kwargs)
+        print('has obs idx?', self.obs_idx)
 
 
 register(
