@@ -19,39 +19,42 @@ from plotting import SavePlot
 def make_result_directory(config, filename):
     ######## Create folder for results ########
     dirname = make_dirname(config)
-    dirname = "results/" + str(config['name'])
+    # dirname = "results/" + str(config['name'])
     Path(dirname).mkdir(parents=True, exist_ok=True)
 
     # save config file right away, results are added to the folder later
     original = "configs/" + filename
     target = "./" + dirname + "/" + filename
     shutil.copyfile(original, target)
+    print(dirname)
 
     return dirname
 
 
 def make_dirname(config, pickle_file_name=False):
-    q_learning_variant = config['q_learning_variant']
     policy = config['policy']
     epsilon = config['epsilon']
+    alpha = config['alpha']
+    gamma = config['gamma']
     num_iter = config['num_iter']
     env = config['env']
 
     timestamp = datetime.now()
     dirname = "results/" \
-    + str(q_learning_variant) \
-    + "/" + str(policy) + "/" \
+    + str(policy) + "/" \
     + str(env) + "/" \
     + str(timestamp).replace(" ", "_").replace(".", "_").replace(":", "-")
 
     if pickle_file_name:
         print("IN PICKLE FILE NAME")
         #add functionality to abbreviate values, e.g. Random Acquisition -> RA
-        dirname = str(q_learning_variant) + "_" + str(policy) + "_" + str(env) \
+        dirname = str(policy) + "_" + str(env) \
         + "_" + "numiter" + str(num_iter) \
-        + "_" + "epsilon" + str(epsilon) \
+        + "_" + "epsilon_" + str(epsilon) \
+        + "_" + "alpha_" + str(alpha) \
+            + "_" + "gamma_" + str(gamma) \
         + "." + str(timestamp).replace(" ", "_").replace(".", "_").replace(":", "-")
-    
+
     return dirname
 
 
@@ -69,12 +72,13 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
     os.environ['PYTHONHASHSEED'] = str(seed)
 
-def SaveResults(Q_table_list, metrics, metric_names, policy, dirname, config):
-
+def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, config):
+    
     results = \
-        {"Q_table_list": Q_table_list,
-         "metrics": metrics,
-         "policy": policy}
+        {"vanilla_Q_learning": vanilla_Q_learning,
+         "double_Q_learning": double_Q_learning,
+         "metric_names": metric_names,
+         }
 
     # print("Saving results:")
     # print(results)
@@ -88,7 +92,8 @@ def SaveResults(Q_table_list, metrics, metric_names, policy, dirname, config):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    b_file = open(folder + name + ".pkl", "wb")
+    result_pickle_name = make_dirname(config,True)
+    b_file = open(folder + result_pickle_name + ".pkl", "wb")
     pickle.dump(results, b_file)
     b_file.close()
 
@@ -98,7 +103,7 @@ def SaveResults(Q_table_list, metrics, metric_names, policy, dirname, config):
         yaml.dump(results, file)
 
     #save plots
-    SavePlot(metrics,metric_names,name,dirname,smooth=False)
+    SavePlot(vanilla_Q_learning, double_Q_learning, metric_names,name,dirname,smooth=False)
     
 
 

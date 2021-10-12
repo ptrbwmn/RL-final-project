@@ -18,32 +18,28 @@ from utils import make_result_directory, seed_everything, SaveResults
 
 def multi_seed_run(config):
 
-    # all_episode_lengths = []
-    all_episode_returns = []
-
-    # all_AUC_episode_lengths = []
-    # all_AUC_episode_returns = []
+    all_episode_returns_vanilla = []
 
     for i, seed in enumerate(config['seeds']):
         seed_everything(seed=seed)
-        
-        Q_table_list, episode_returns, policy = run_setup(config)
+        Q, episode_returns, policy_vanilla = run_setup(config,"vanilla")
+        all_episode_returns_vanilla.append(episode_returns)
 
-        # all_episode_lengths.append(episode_lengths)
-        all_episode_returns.append(episode_returns)
-        
-        # all_AUC_episode_lengths.append(AreaUnderCurve(episode_lengths,config).item())
-        # all_AUC_episode_returns.append(AreaUnderCurve(episode_returns,config).item())
+    all_episode_returns_vanilla = np.array(all_episode_returns_vanilla)
+    all_episode_returns_vanilla_agg = list(zip(np.mean(all_episode_returns_vanilla, axis=0), np.std(all_episode_returns_vanilla, axis=0)))
+
+    all_episode_returns_double = []
+
+    for i, seed in enumerate(config['seeds']):
+        seed_everything(seed=seed)
+        Q1, Q2, episode_returns, policy_double = run_setup(config,"double")
+        all_episode_returns_double.append(episode_returns)
+
+    all_episode_returns_double = np.array(all_episode_returns_double)
+    all_episode_returns_double_agg = list(zip(np.mean(all_episode_returns_double, axis=0), np.std(all_episode_returns_double, axis=0)))
 
 
-    # all_episode_lengths = np.array(all_episode_lengths)
-    all_episode_returns = np.array(all_episode_returns)
-
-    # all_episode_lengths_agg = list(zip(np.mean(all_episode_lengths, axis=0), np.std(all_episode_lengths, axis=0)))
-    all_episode_returns_agg = list(zip(np.mean(all_episode_returns, axis=0), np.std(all_episode_returns, axis=0)))
-
-
-    return Q_table_list, all_episode_returns_agg, policy
+    return (Q, [all_episode_returns_vanilla_agg], policy_vanilla), (Q1, Q2, [all_episode_returns_double_agg], policy_double)
 
 
 if __name__ == '__main__':
@@ -63,13 +59,13 @@ if __name__ == '__main__':
         print(config)
         config_plotting = copy.deepcopy(config)
 
-        Q_table_list, episode_returns_agg, policy = \
+        vanilla_Q_learning, double_Q_learning = \
             multi_seed_run(config)
         
         # print(f'AREA UNDER episode_lengths CURVE average: {np.mean(np.array(all_AUC_episode_lengths))}')
         # print(f'AREA UNDER episode_returns CURVE average: {np.mean(np.array(all_AUC_episode_returns))}')
 
-        SaveResults(Q_table_list, [episode_returns_agg], ["episode returns"], policy, dirname, config_plotting)
+        SaveResults(vanilla_Q_learning, double_Q_learning, ["episode returns"], dirname, config_plotting)
 
     end = time.time()
     print("FULL TIME SPENT:")

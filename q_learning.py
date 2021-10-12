@@ -99,8 +99,8 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
             R+=(discount_factor**i)*reward
         
         stats.append((i, R))
-    episode_lengths, episode_returns = zip(*stats)
-    return [Q], episode_returns, policy, episode_lengths
+    _, episode_returns = zip(*stats)
+    return policy.Q, episode_returns, policy
 
 def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, alpha=0.5):
     """
@@ -156,5 +156,5 @@ def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, al
             R+=(discount_factor**i)*reward
         
         stats.append((i, R))
-    episode_lengths, episode_returns = zip(*stats)
-    return [Q1, Q2], episode_returns, policy, episode_lengths
+    _, episode_returns = zip(*stats)
+    return policy.Q1, policy.Q2, episode_returns, policy
