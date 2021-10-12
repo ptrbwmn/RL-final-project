@@ -27,8 +27,8 @@ env = gym.make('MiniGrid-EmptyDense-5x5-v0')
 
 # obs = env.reset()  # This now produces an RGB tensor only
 obs = env.custom_reset()
-env.render()
-input('press any key to start')
+#env.render()
+#input('press any key to start')
 nS = env.observation_space.spaces.__sizeof__()
 # Q={}
 # if env.hash() not in Q:

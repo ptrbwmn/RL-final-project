@@ -18,8 +18,9 @@ class EpsilonGreedyPolicy(object):
         Returns:
             An action (int).
         """
-        self.state_count[obs]+=1
-        epsilon = self.epsilon * 0.9**(self.state_count[obs])
+        #self.state_count[obs]+=1
+        #epsilon = self.epsilon * 0.9**(self.state_count[obs])
+        epsilon = self.epsilon
         num_actions = self.Q.shape[1]
         greedy = np.random.choice(2,1,p=[epsilon, 1-epsilon])
         if greedy:

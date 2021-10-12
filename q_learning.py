@@ -89,8 +89,10 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
         else:
             start_state = env.reset()
         done = False
+        print('episode',i_episode,' - ',end='')
         while not done:
             start_action = policy.sample_action(start_state)
+            print(start_action,end='')
             new_step = env.step(start_action)
             new_state = new_step[0]
             reward = new_step[1]
@@ -104,7 +106,7 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
             start_state = new_state
             i += 1
             R += (discount_factor**i)*reward
-
+        print('steps:',i,'Reward',R)
         stats.append((i, R))
     episode_lengths, episode_returns = zip(*stats)
     return [Q], episode_returns, policy, episode_lengths

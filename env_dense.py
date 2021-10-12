@@ -32,7 +32,7 @@ class EmptyEnvDenseReward(EmptyEnv):
         # TODO: add hashing here
         self.step_count += 1
 
-        reward = -0.1
+        reward = 0
         done = False
 
         # Get the position in front of the agent
@@ -55,6 +55,7 @@ class EmptyEnvDenseReward(EmptyEnv):
 
         # Move forward
         elif action == self.actions.forward:
+            #reward = -.1
             if fwd_cell == None or fwd_cell.can_overlap():
                 self.agent_pos = fwd_pos
             if fwd_cell != None and fwd_cell.type == 'goal':
