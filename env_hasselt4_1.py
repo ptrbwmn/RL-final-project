@@ -19,7 +19,10 @@ class BasicEnv2(gym.Env):
     def step(self, action):
 
         # 
-        if self.state == 0:
+        if self.state == 1:
+            reward = np.random.normal(-0.1,1)
+            done = True
+        elif self.state == 0:
             if action == 0:
                 reward = 0
                 done = True
@@ -27,16 +30,14 @@ class BasicEnv2(gym.Env):
                 reward = 0
                 self.state = 1
                 done = False
-        elif self.state == 1:
-            reward = np.random.normal(0,1)
-            done = True
+            else: print('ERROR')
         info = {}
         state=self.state
         return state, reward, done, info
 
     def reset(self):
-        state = 0
-        return state
+        self.state = 0
+        return self.state
   
     def render(self, mode='human'):
         pass

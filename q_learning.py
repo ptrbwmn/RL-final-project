@@ -88,16 +88,19 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
             new_state = new_step[0]
             reward = new_step[1]
             done = new_step[2]
+            Qnew=np.max(policy.Q[new_state])
+            if done:
+                Qnew=0
             policy.Q[start_state][start_action] = policy.Q[start_state][start_action] + alpha*(reward + \
-                                            discount_factor*np.max(policy.Q[new_state]) - policy.Q[start_state,start_action])
+                                            discount_factor*Qnew - policy.Q[start_state,start_action])
             #print(Q)
             start_state = new_state
             i+=1
             R+=(discount_factor**i)*reward
         
         stats.append((i, R))
-    _, episode_returns = zip(*stats)
-    return [Q], episode_returns, policy
+    episode_lengths, episode_returns = zip(*stats)
+    return [Q], episode_returns, policy, episode_lengths
 
 def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, alpha=0.5):
     """
@@ -135,15 +138,23 @@ def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, al
             done = new_step[2]
             coinflip = random.randint(0,1)
             if coinflip:
+                amax = np.argmax(policy.Q1[new_state])
+                Qmax = policy.Q2[new_state,amax]
+                if done:
+                    Qmax=0
                 policy.Q1[start_state][start_action] = policy.Q1[start_state][start_action] + alpha*(reward + \
-                                            discount_factor*np.max(policy.Q2[new_state]) - policy.Q1[start_state,start_action])
+                                            discount_factor*Qmax - policy.Q1[start_state,start_action])
             else:
+                amax = np.argmax(policy.Q2[new_state])
+                Qmax = policy.Q1[new_state,amax]
+                if done:
+                    Qmax=0
                 policy.Q2[start_state][start_action] = policy.Q2[start_state][start_action] + alpha*(reward + \
-                                            discount_factor*np.max(policy.Q1[new_state]) - policy.Q2[start_state,start_action])
+                                            discount_factor*Qmax - policy.Q2[start_state,start_action])
             start_state = new_state
             i+=1
             R+=(discount_factor**i)*reward
         
         stats.append((i, R))
-    _, episode_returns = zip(*stats)
-    return [Q1, Q2], episode_returns, policy
+    episode_lengths, episode_returns = zip(*stats)
+    return [Q1, Q2], episode_returns, policy, episode_lengths
