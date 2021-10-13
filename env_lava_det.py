@@ -1,24 +1,39 @@
+from gym_minigrid.minigrid import *
+from gym_minigrid.envs.distshift import DistShiftEnv
 from gym_minigrid.register import register
-from gym_minigrid.envs.empty import EmptyEnv
 import numpy as np
 from hash_obs import *
 
+class LavaDetEnv(DistShiftEnv):
+    """
+    Deterministic environment with lava.
+    """
 
-class EmptyEnvDenseReward(EmptyEnv):
-    def __init__(self,
-                 size=8,
-                 agent_start_pos=(1, 1),
-                 agent_start_dir=0):
-        super().__init__(size, agent_start_pos, agent_start_dir)
+    def __init__(
+        self,
+        width=9,
+        height=7,
+        agent_start_pos=(1,1),
+        agent_start_dir=0,
+        strip2_row=5
+    ):
+        super().__init__(
+            width,
+            height,
+            agent_start_pos,
+            agent_start_dir,
+            strip2_row
+        )
         self.nS = self.observation_space.spaces.__sizeof__()
         self.nA = 3
         self.obs_idx = dict()
 
     def step(self, action):
-        # TODO: add hashing here
+
         self.step_count += 1
 
-        reward = -0.1
+        # Default is reward of -1 per step, and no termination; may be adjusted based on action and position
+        reward = -1.0
         done = False
 
         # Get the position in front of the agent
@@ -29,19 +44,16 @@ class EmptyEnvDenseReward(EmptyEnv):
 
         # Rotate left
         if action == self.actions.left:
-            # reward=0.
             self.agent_dir -= 1
             if self.agent_dir < 0:
                 self.agent_dir += 4
 
         # Rotate right
         elif action == self.actions.right:
-            # reward=0.
             self.agent_dir = (self.agent_dir + 1) % 4
 
         # Move forward
         elif action == self.actions.forward:
-            #reward = -.1
             if fwd_cell == None or fwd_cell.can_overlap():
                 self.agent_pos = fwd_pos
             if fwd_cell != None and fwd_cell.type == 'goal':
@@ -49,6 +61,7 @@ class EmptyEnvDenseReward(EmptyEnv):
                 reward = self._reward()
             if fwd_cell != None and fwd_cell.type == 'lava':
                 done = True
+                reward = -10.0
 
         # Pick up an object
         elif action == self.actions.pickup:
@@ -92,21 +105,17 @@ class EmptyEnvDenseReward(EmptyEnv):
     def custom_reset(self):
 
         obs = self.reset()
-
         obs = hash_obs(obs)
         if obs not in self.obs_idx:
             self.obs_idx[obs] = len(self.obs_idx)
-
         return self.obs_idx[obs]
 
-
-class EmptyEnvDense5x5(EmptyEnvDenseReward):
+class LavaDetEnv9x7(LavaDetEnv):
     def __init__(self, **kwargs):
-        super().__init__(size=5, **kwargs)
-        #print('has obs idx?', self.obs_idx)
-
+        super().__init__(width=9, height=7, **kwargs)
 
 register(
-    id='MiniGrid-EmptyDense-5x5-v0',
-    entry_point='env_dense:EmptyEnvDense5x5'
+    id='MiniGrid-LavaDet-9x7-v0',
+    entry_point='env_lava_det:LavaDetEnv9x7'
 )
+
