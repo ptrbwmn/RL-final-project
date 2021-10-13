@@ -24,13 +24,13 @@ def run_setup(config, q_learning_variant):
         if q_learning_variant == "vanilla":
             Q = np.zeros((env.nS, env.nA))
             policy = EpsilonGreedyPolicy(Q, epsilon=epsilon)
-            Q_table, episode_returns, policy = q_learning(env, policy, Q, num_iter, discount_factor=gamma, alpha=alpha)
+            Q_table, episode_returns, policy, _ = q_learning(env, policy, Q, num_iter, discount_factor=gamma, alpha=alpha)
             return Q_table, episode_returns, policy
         elif q_learning_variant == "double":
             Q1 = np.zeros((env.nS, env.nA))
             Q2 = np.zeros((env.nS, env.nA))
             policy = EpsilonGreedyPolicy_Double_Q(Q1, Q2, epsilon=epsilon)
-            Q_table1, Q_table2, episode_returns, policy = double_q_learning(env, policy, Q1, Q2, num_iter,  discount_factor=gamma, alpha=alpha)
+            Q_table1, Q_table2, episode_returns, policy, _ = double_q_learning(env, policy, Q1, Q2, num_iter,  discount_factor=gamma, alpha=alpha)
             return Q_table1, Q_table2, episode_returns, policy
         else:
             raise NotImplementedError

@@ -58,7 +58,7 @@ def sarsa(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
     return Q, episode_returns, policy
 
 
-def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
+def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5, print_episodes=False):
     """
     Q-Learning algorithm: Off-policy TD control. Finds the optimal greedy policy
     while following an epsilon-greedy policy
@@ -89,10 +89,10 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
         else:
             start_state = env.reset()
         done = False
-        print('episode',i_episode,' - ',end='')
+        if print_episodes: print('episode',i_episode,' - ',end='')
         while not done:
             start_action = policy.sample_action(start_state)
-            print(start_action,end='')
+            if print_episodes: print(start_action,end='')
             new_step = env.step(start_action)
             new_state = new_step[0]
             reward = new_step[1]
@@ -106,7 +106,7 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
             start_state = new_state
             i += 1
             R += (discount_factor**i)*reward
-        print('steps:',i,'Reward',R)
+        if print_episodes: print('steps:',i,'Reward',R)
         stats.append((i, R))
     episode_lengths, episode_returns = zip(*stats)
     return [Q], episode_returns, policy, episode_lengths
@@ -170,5 +170,5 @@ def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, al
 
         stats.append((i, R))
     episode_lengths, episode_returns = zip(*stats)
-    return [Q1, Q2], episode_returns, policy, episode_lengths
+    return Q1, Q2, episode_returns, policy, episode_lengths
 

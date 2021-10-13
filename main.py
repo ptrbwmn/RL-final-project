@@ -16,6 +16,10 @@ import copy
 from run_setup import run_setup
 from utils import make_result_directory, seed_everything, SaveResults
 
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
+
 def multi_seed_run(config):
 
     all_episode_returns_vanilla = []
