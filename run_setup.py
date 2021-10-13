@@ -1,7 +1,8 @@
 from environments import WindyGridworldEnv, BasicEnv2
+from env_dense import EmptyEnvDense5x5
 from policy import EpsilonGreedyPolicy, EpsilonGreedyPolicy_Double_Q
 from q_learning import sarsa, q_learning, double_q_learning
-
+import gym
 import numpy as np
 
 
@@ -15,8 +16,8 @@ def run_setup(config, q_learning_variant):
     env = config['env']
     if env == "WindyGridworldEnv":
         env = WindyGridworldEnv()
-    elif env == "BasicEnv2":
-        env = BasicEnv2()
+    elif env == "EmptyDenseEnv5x5":
+        env = gym.make('MiniGrid-EmptyDense-5x5-v0')
     else:
         raise NotImplementedError
     

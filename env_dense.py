@@ -25,14 +25,15 @@ class EmptyEnvDenseReward(EmptyEnv):
                  agent_start_pos=(1, 1),
                  agent_start_dir=0):
         super().__init__(size, agent_start_pos, agent_start_dir)
-
+        self.nS = self.observation_space.spaces.__sizeof__()
+        self.nA = 3
         self.obs_idx = dict()
 
     def step(self, action):
         # TODO: add hashing here
         self.step_count += 1
 
-        reward = 0
+        reward = -0.1
         done = False
 
         # Get the position in front of the agent
@@ -117,7 +118,7 @@ class EmptyEnvDenseReward(EmptyEnv):
 class EmptyEnvDense5x5(EmptyEnvDenseReward):
     def __init__(self, **kwargs):
         super().__init__(size=5, **kwargs)
-        print('has obs idx?', self.obs_idx)
+        #print('has obs idx?', self.obs_idx)
 
 
 register(
