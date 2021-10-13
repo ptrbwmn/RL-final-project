@@ -7,7 +7,7 @@ class EpsilonGreedyPolicy(object):
     def __init__(self, Q, epsilon):
         self.Q = Q.copy()
         self.epsilon = epsilon
-    
+        self.state_count = np.zeros((Q.shape[0])).astype(np.float32)
     def sample_action(self, obs):
         """
         This method takes a state as input and returns an action sampled from this policy.  
@@ -18,6 +18,8 @@ class EpsilonGreedyPolicy(object):
         Returns:
             An action (int).
         """
+        #self.state_count[obs]+=1
+        #epsilon = self.epsilon * 0.9**(self.state_count[obs])
         epsilon = self.epsilon
         num_actions = self.Q.shape[1]
         greedy = np.random.choice(2,1,p=[epsilon, 1-epsilon])

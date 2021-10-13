@@ -2,14 +2,16 @@ from tqdm import tqdm as _tqdm
 import numpy as np
 import random
 
+
 def tqdm(*args, **kwargs):
-    return _tqdm(*args, **kwargs, mininterval=1)  # Safety, do not overflow buffer
+    # Safety, do not overflow buffer
+    return _tqdm(*args, **kwargs, mininterval=1)
 
 
 def sarsa(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
     """
     SARSA algorithm: On-policy TD control. Finds the optimal epsilon-greedy policy.
-    
+
     Args:
         env: OpenAI environment.
         policy: A policy which allows us to sample actions with its sample_action method.
@@ -17,21 +19,24 @@ def sarsa(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
         num_episodes: Number of episodes to run for.
         discount_factor: Gamma discount factor.
         alpha: TD learning rate.
-        
+
     Returns:
         A tuple (Q, stats).
         Q is a numpy array Q[s,a] -> state-action value.
         stats is a list of tuples giving the episode lengths and returns.
     """
-    
+
     # Keeps track of useful statistics
     stats = []
-    
+
     for i_episode in tqdm(range(num_episodes)):
         i = 0
         R = 0
-        
-        start_state = env.reset()
+
+        if hasattr(env, 'custom_reset'):
+            start_state = env.custom_reset()
+        else:
+            start_state = env.reset()
         start_action = policy.sample_action(start_state)
         done = False
         while not done:
@@ -40,15 +45,14 @@ def sarsa(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
             reward = new_step[1]
             done = new_step[2]
             new_action = policy.sample_action(new_state)
-            policy.Q[start_state][start_action] = policy.Q[start_state][start_action] + alpha*(reward + \
-                                            discount_factor*policy.Q[new_state,new_action] - policy.Q[start_state,start_action])
-            #print(Q)
+            policy.Q[start_state][start_action] = policy.Q[start_state][start_action] + alpha*(reward +
+                                                                                               discount_factor*policy.Q[new_state, new_action] - policy.Q[start_state, start_action])
+            # print(Q)
             start_state = new_state
             start_action = new_action
-            i+=1
-            R+=(discount_factor**i)*reward
-            
-        
+            i += 1
+            R += (discount_factor**i)*reward
+
         stats.append((i, R))
     _, episode_returns = zip(*stats)
     return Q, episode_returns, policy
@@ -58,7 +62,7 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
     """
     Q-Learning algorithm: Off-policy TD control. Finds the optimal greedy policy
     while following an epsilon-greedy policy
-    
+
     Args:
         env: OpenAI environment.
         policy: A behavior policy which allows us to sample actions with its sample_action method.
@@ -66,47 +70,53 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5):
         num_episodes: Number of episodes to run for.
         discount_factor: Gamma discount factor.
         alpha: TD learning rate.
-        
+
     Returns:
         A tuple (Q, stats).
         Q is a numpy array Q[s,a] -> state-action value.
         stats is a list of tuples giving the episode lengths and returns.
     """
-    
+
     # Keeps track of useful statistics
     stats = []
-    
+
     for i_episode in tqdm(range(num_episodes)):
         i = 0
         R = 0
-        
-        start_state = env.reset()
+
+        if hasattr(env, 'custom_reset'):
+            start_state = env.custom_reset()
+        else:
+            start_state = env.reset()
         done = False
+        print('episode',i_episode,' - ',end='')
         while not done:
             start_action = policy.sample_action(start_state)
+            print(start_action,end='')
             new_step = env.step(start_action)
             new_state = new_step[0]
             reward = new_step[1]
             done = new_step[2]
-            Qnew=np.max(policy.Q[new_state])
+            Qnew = np.max(policy.Q[new_state])
             if done:
-                Qnew=0
-            policy.Q[start_state][start_action] = policy.Q[start_state][start_action] + alpha*(reward + \
-                                            discount_factor*Qnew - policy.Q[start_state,start_action])
-            #print(Q)
+                Qnew = 0
+            policy.Q[start_state][start_action] = policy.Q[start_state][start_action] + alpha*(reward +
+                                                                                               discount_factor*Qnew - policy.Q[start_state, start_action])
+            # print(Q)
             start_state = new_state
-            i+=1
-            R+=(discount_factor**i)*reward
-        
+            i += 1
+            R += (discount_factor**i)*reward
+        print('steps:',i,'Reward',R)
         stats.append((i, R))
-    _, episode_returns = zip(*stats)
-    return policy.Q, episode_returns, policy
+    episode_lengths, episode_returns = zip(*stats)
+    return [Q], episode_returns, policy, episode_lengths
+
 
 def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, alpha=0.5):
     """
     Q-Learning algorithm: Off-policy TD control. Finds the optimal greedy policy
     while following an epsilon-greedy policy
-    
+
     Args:
         env: OpenAI environment.
         policy: A behavior policy which allows us to sample actions with its sample_action method.
@@ -114,21 +124,24 @@ def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, al
         num_episodes: Number of episodes to run for.
         discount_factor: Gamma discount factor.
         alpha: TD learning rate.
-        
+
     Returns:
         A tuple (Q, stats).
         Q is a numpy array Q[s,a] -> state-action value.
         stats is a list of tuples giving the episode lengths and returns.
     """
-    
+
     # Keeps track of useful statistics
     stats = []
-    
+
     for i_episode in tqdm(range(num_episodes)):
         i = 0
         R = 0
-        
-        start_state = env.reset()
+
+        if hasattr(env, 'custom_reset'):
+            start_state = env.custom_reset()
+        else:
+            start_state = env.reset()
         done = False
         while not done:
             start_action = policy.sample_action(start_state)
@@ -136,25 +149,26 @@ def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, al
             new_state = new_step[0]
             reward = new_step[1]
             done = new_step[2]
-            coinflip = random.randint(0,1)
+            coinflip = random.randint(0, 1)
             if coinflip:
                 amax = np.argmax(policy.Q1[new_state])
-                Qmax = policy.Q2[new_state,amax]
+                Qmax = policy.Q2[new_state, amax]
                 if done:
-                    Qmax=0
-                policy.Q1[start_state][start_action] = policy.Q1[start_state][start_action] + alpha*(reward + \
-                                            discount_factor*Qmax - policy.Q1[start_state,start_action])
+                    Qmax = 0
+                policy.Q1[start_state][start_action] = policy.Q1[start_state][start_action] + alpha*(reward +
+                                                                                                     discount_factor*Qmax - policy.Q1[start_state, start_action])
             else:
                 amax = np.argmax(policy.Q2[new_state])
-                Qmax = policy.Q1[new_state,amax]
+                Qmax = policy.Q1[new_state, amax]
                 if done:
-                    Qmax=0
-                policy.Q2[start_state][start_action] = policy.Q2[start_state][start_action] + alpha*(reward + \
-                                            discount_factor*Qmax - policy.Q2[start_state,start_action])
+                    Qmax = 0
+                policy.Q2[start_state][start_action] = policy.Q2[start_state][start_action] + alpha*(reward +
+                                                                                                     discount_factor*Qmax - policy.Q2[start_state, start_action])
             start_state = new_state
-            i+=1
-            R+=(discount_factor**i)*reward
-        
+            i += 1
+            R += (discount_factor**i)*reward
+
         stats.append((i, R))
-    _, episode_returns = zip(*stats)
-    return policy.Q1, policy.Q2, episode_returns, policy
+    episode_lengths, episode_returns = zip(*stats)
+    return [Q1, Q2], episode_returns, policy, episode_lengths
+
