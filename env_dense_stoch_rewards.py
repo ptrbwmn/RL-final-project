@@ -19,7 +19,7 @@ def hash_obs(observation, size=16):
     return sample_hash.hexdigest()[:size]
 
 
-class EmptyEnvDenseReward(EmptyEnv):
+class EmptyEnvDenseReward_StochRew(EmptyEnv):
     def __init__(self,
                  size=8,
                  agent_start_pos=(1, 1),
@@ -33,7 +33,7 @@ class EmptyEnvDenseReward(EmptyEnv):
         # TODO: add hashing here
         self.step_count += 1
 
-        reward = -1
+        reward = np.random.choice([-12,10])
         done = False
 
         # Get the position in front of the agent
@@ -116,13 +116,13 @@ class EmptyEnvDenseReward(EmptyEnv):
         return self.obs_idx[obs]
 
 
-class EmptyEnvDense5x5(EmptyEnvDenseReward):
+class EmptyEnvDense5x5StochRew(EmptyEnvDenseReward_StochRew):
     def __init__(self, **kwargs):
         super().__init__(size=5, **kwargs)
         #print('has obs idx?', self.obs_idx)
 
 
 register(
-    id='MiniGrid-EmptyDense-5x5-v0',
-    entry_point='env_dense:EmptyEnvDense5x5'
+    id='MiniGrid-EmptyDense-5x5StochRew-v0',
+    entry_point='env_dense_stoch_rewards:EmptyEnvDense5x5StochRew'
 )
