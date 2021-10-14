@@ -22,28 +22,64 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 def multi_seed_run(config):
 
-    all_episode_returns_vanilla = []
+    num_seeds = len(config['seeds'])
+    num_iter = config['num_iter']
+    num_metrics = len(config['metric_names'])
 
+    #maak een zeros array van num_iter,num_metrics,num_seeds
+    #vul die elke seed op de juiste seed index
+    #neem dan mean over de seed dimensie voor de (num_iter,num_metrics) 
+    #en in een andere de std over seed dimensie ook resulterende in (num_iter,num_metrics)
+    #
+    metrics_vanilla_all = np.zeros((num_seeds,num_metrics,num_iter))
     for i, seed in enumerate(config['seeds']):
         seed_everything(seed=seed)
-        Q, episode_returns, policy_vanilla = run_setup(config,"vanilla")
-        all_episode_returns_vanilla.append(episode_returns)
+        Q, metrics_vanilla, policy_vanilla, Q_tables_vanilla = run_setup(config,"vanilla")
+        metrics_vanilla_all[i]=metrics_vanilla
 
-    all_episode_returns_vanilla = np.array(all_episode_returns_vanilla)
-    all_episode_returns_vanilla_agg = list(zip(np.mean(all_episode_returns_vanilla, axis=0), np.std(all_episode_returns_vanilla, axis=0)))
-
-    all_episode_returns_double = []
-
+    metrics_double_all = np.zeros((num_seeds,num_metrics,num_iter))
     for i, seed in enumerate(config['seeds']):
         seed_everything(seed=seed)
-        Q1, Q2, episode_returns, policy_double = run_setup(config,"double")
-        all_episode_returns_double.append(episode_returns)
+        Q1, Q2, metrics_double, policy_double, Q_tables_double = run_setup(config,"double")
+        metrics_double_all[i]=metrics_double
+    
+    metrics_vanilla_mean = np.mean(metrics_vanilla_all,axis=0)
+    metrics_vanilla_std= np.std(metrics_vanilla_all,axis=0)
+    metrics_double_mean = np.mean(metrics_double_all,axis=0)
+    metrics_double_std= np.std(metrics_double_all,axis=0)
+    # metrics_agg_all = []
+    # for seed_index in range(num_seeds):
+    #     for metric_index in range(num_metrics):
+    #         metric = metrics_vanilla_all[seed_index][metric_index]
+    #         metric_agg = list(zip(np.mean(metric, axis=0), np.std(metric, axis=0)))
+    # num_seeds = len(config['seeds'])
+    # num_iter = config['num_iter']
+    # num_metrics = config['num_metrics']
 
-    all_episode_returns_double = np.array(all_episode_returns_double)
-    all_episode_returns_double_agg = list(zip(np.mean(all_episode_returns_double, axis=0), np.std(all_episode_returns_double, axis=0)))
+    # metrics_vanilla_all = np.zeros((num_metrics,num_iter))
+    # for i, seed in enumerate(config['seeds']):
+    #     seed_everything(seed=seed)
+    #     Q, metrics_vanilla, policy_vanilla = run_setup(config,"vanilla")
+    #     metrics_vanilla_all+=(1/num_seeds)*metrics_vanilla
 
+    # metrics_double_all = np.zeros((num_metrics,num_iter))
+    # for i, seed in enumerate(config['seeds']):
+    #     seed_everything(seed=seed)
+    #     Q1, Q2, metrics_double, policy_double = run_setup(config,"double")
+    #     metrics_double_all+=(1/num_seeds)*metrics_double
 
-    return (Q, [all_episode_returns_vanilla_agg], policy_vanilla), (Q1, Q2, [all_episode_returns_double_agg], policy_double)
+    # print(metrics_vanilla_all)
+    metrics_vanilla = [metrics_vanilla_mean, metrics_vanilla_std]
+    metrics_double = [metrics_double_mean, metrics_double_std]
+
+    last_Q = Q
+    last_policy_vanilla = policy_vanilla
+    last_Q1 = Q1
+    last_Q2 = Q2
+    last_policy_double = policy_double
+    last_Q_tables_vanilla = Q_tables_vanilla
+    last_Q_tables_double = Q_tables_double
+    return (last_Q, metrics_vanilla, last_policy_vanilla,last_Q_tables_vanilla), (last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double)
 
 
 if __name__ == '__main__':
@@ -69,7 +105,7 @@ if __name__ == '__main__':
         # print(f'AREA UNDER episode_lengths CURVE average: {np.mean(np.array(all_AUC_episode_lengths))}')
         # print(f'AREA UNDER episode_returns CURVE average: {np.mean(np.array(all_AUC_episode_returns))}')
 
-        SaveResults(vanilla_Q_learning, double_Q_learning, ["episode returns"], dirname, config_plotting)
+        SaveResults(vanilla_Q_learning, double_Q_learning, config_plotting['metric_names'], dirname, config_plotting)
 
     end = time.time()
     print("FULL TIME SPENT:")
