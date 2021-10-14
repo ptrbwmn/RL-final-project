@@ -116,7 +116,7 @@ for turns in range(runs):
     Q[1,1]=-1e6
     s=env.reset()
     policy2=egPolicy_Double_Q(Q,Q,0.1)
-    Q_q_learning2, episode_returns2, policy_q_learning2, episode_lengths2 = double_q_learning(env, policy2, Q, Q, 300)
+    Q_q_learning21, Q_learning22, episode_returns2, policy_q_learning2, episode_lengths2 = double_q_learning(env, policy2, Q, Q, 300)
 
     e1=np.array(episode_lengths1)-1
     k1=e1.astype(np.float)
