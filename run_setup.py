@@ -1,4 +1,4 @@
-from environments import WindyGridworldEnv, BasicEnv2, CliffWalkingEnv, LavaWorld, LavaWorldStoch
+from environments import WindyGridworldEnv, BasicEnv2, CliffWalkingEnv, LavaWorld5x7Determ, LavaWorld5x7StochMovement
 from env_dense import EmptyEnvDense5x5
 from env_lava_det import LavaDetEnv9x7
 from env_lava_stoch import LavaStoch80Env9x7
@@ -26,10 +26,10 @@ def run_setup(config, q_learning_variant):
         env = gym.make('MiniGrid-LavaDet-9x7-v0')
     elif env == "LavaStoch80Env9x7":
         env = gym.make('MiniGrid-LavaStoch80-9x7-v0')
-    elif env == "LavaWorld":
-        env = LavaWorld()
-    elif env == "LavaWorldStoch":
-        env = LavaWorldStoch()
+    elif env == "LavaWorld5x7Determ":
+        env = LavaWorld5x7Determ()
+    elif env == "LavaWorld5x7StochMovement":
+        env = LavaWorld5x7StochMovement()
     else:
         raise NotImplementedError
     
