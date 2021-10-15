@@ -56,18 +56,29 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
 def PlotMap(Q_table):
     V_table = np.max(Q_table,axis=1).reshape(4,12)
     min_Q_value = np.min(Q_table)
-    print(V_table)
+    print(Q_table)
+    plt.imshow(V_table[::-1][:])
+    plt.show()
     # V_table = np.zeros((4,4))
-    blank_background = np.ones((5,13))*0.5
-    plt.imshow(blank_background,'winter')
+    # blank_background = np.ones((5,13))*0.5
+    # plt.imshow(blank_background,'winter')
+    plt.xlim((-4,13))
+    plt.ylim((-4,13))
     # plt.imshow(V_table[::-1][:])
     for i in range(12):
         for j in range(4):
             plt.gca().add_patch(Rectangle((i,j),1,1,linewidth=1,edgecolor='r',facecolor='none'))
-            print(Q_table[i,j]/min_Q_value)
-            plt.arrow(i+0.5, j+0.5, 0.45, 0, width=0.04,length_includes_head=True, color=(Q_table[j*4+i,0]/min_Q_value,0.1,0.1,1))
-            plt.arrow(i+0.5, j+0.5, 0, 0.45, width=0.04,length_includes_head=True, color=(Q_table[j*4+i,1]/min_Q_value,0.1,0.1,1))
-            plt.arrow(i+0.5, j+0.5, -0.45, 0, width=0.04,length_includes_head=True, color=(Q_table[j*4+i,2]/min_Q_value,0.1,0.1,1))
-            plt.arrow(i+0.5, j+0.5, 0, -0.45, width=0.04,length_includes_head=True, color=(Q_table[j*4+i,3]/min_Q_value,0.1,0.1,1))
+            max_action = np.argmax(Q_table[j*12+i])
+            #Q_table[j*12+i,0]/min_Q_value
+            if max_action == 0:
+                plt.arrow(i+0.5, j+0.5, 0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+            elif max_action == 1:
+                plt.arrow(i+0.5, j+0.5, 0, -0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+            elif max_action == 2:
+                plt.arrow(i+0.5, j+0.5, -0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+            elif max_action == 3:
+                plt.arrow(i+0.5, j+0.5, 0, 0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+            else:
+                print(max_action)
     # plt.colorbar()
     plt.show()
