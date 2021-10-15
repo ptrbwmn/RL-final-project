@@ -5,7 +5,7 @@ policy: "EpsilonGreedy" # ["EpsilonGreedy"]
 epsilon: 0.1
 alpha: 0.5
 gamma: 1
-num_iter: 1000
+num_iter: 300
 
 #only for giving the names in the plot, not for selection of what to record during training
 #the number of metric names determines how many of the first defined metrics are attempted to be plotted

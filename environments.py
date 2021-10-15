@@ -156,13 +156,13 @@ class CliffWalkingEnv(gym.Env):
     def step(self, action):
         new_state = deepcopy(self.current_state)
 
-        if action == 0: #right
+        if action == 1: #right
             new_state[1] = min(new_state[1]+1, self.cols-1)
-        elif action == 1: #down
+        elif action == 2: #down
             new_state[0] = max(new_state[0]-1, 0)
-        elif action == 2: #left
+        elif action == 3: #left
             new_state[1] = max(new_state[1]-1, 0)
-        elif action == 3: #up
+        elif action == 0: #up
             new_state[0] = min(new_state[0]+1, self.rows-1)
         else:
             raise Exception("Invalid action.")
