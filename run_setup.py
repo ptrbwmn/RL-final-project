@@ -20,7 +20,6 @@ def run_setup(config, q_learning_variant):
         env = WindyGridworldEnv()
     elif env == "EmptyDenseEnv5x5":
         env = gym.make('MiniGrid-EmptyDense-5x5-v0')
-
     elif env == "CliffWalkingEnv":
         env = CliffWalkingEnv()
     elif env == "LavaDetEnv9x7":
@@ -39,13 +38,13 @@ def run_setup(config, q_learning_variant):
             Q = np.zeros((env.nS, env.nA))
             policy = EpsilonGreedyPolicy(Q, epsilon=epsilon)
             Q_table, metrics, policy, Q_tables = q_learning(env, policy, Q, num_iter, discount_factor=gamma, alpha=alpha)
-            return Q_table, np.array(metrics), policy, Q_tables
+            return Q_table, np.array(metrics), policy, Q_tables, env
         elif q_learning_variant == "double":
             Q1 = np.zeros((env.nS, env.nA))
             Q2 = np.zeros((env.nS, env.nA))
             policy = EpsilonGreedyPolicy_Double_Q(Q1, Q2, epsilon=epsilon)
             Q_table1, Q_table2, metrics, policy, Q_tables= double_q_learning(env, policy, Q1, Q2, num_iter,  discount_factor=gamma, alpha=alpha)
-            return Q_table1, Q_table2, np.array(metrics), policy, Q_tables
+            return Q_table1, Q_table2, np.array(metrics), policy, Q_tables, env
         else:
             raise NotImplementedError
     else:

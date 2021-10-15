@@ -189,6 +189,16 @@ class CliffWalkingEnv(gym.Env):
     def close(self):
         pass
 
+    def get_state_color(self,state_number):
+        if state_number in [1,2,3,4,5,6,7,8,9,10]:
+            return "grey"
+        elif state_number == 11:
+            return "green"
+        elif state_number == 0:
+            return "blue"
+        else:
+            return "white"
+
 class LavaWorld5x7Determ(gym.Env):
     ''' 
     '''
