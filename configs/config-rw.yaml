@@ -1,11 +1,12 @@
 name: "test"
-seeds: [0,1] #,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-env: "LavaWorld5x7Determ" # ["LavaWorld5x7StochMovement", "LavaWorld5x7Determ"]
+seeds: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40]
+env: "SimpleWorld3x3StochRewards" # ["LavaWorld5x7StochMovement", "LavaWorld5x7Determ", "SimpleWorld3x3Determ", "SimpleWorld3x3StochMovement", "SimpleWorld3x3StochRewards"]
 policy: "EpsilonGreedy" # ["EpsilonGreedy"]
-epsilon: 0.5
+epsilon: 0.2
+eps_decay: True
 alpha: 0.5
 gamma: 1
-num_iter: 1000
+num_iter: 100
 
 #only for giving the names in the plot, not for selection of what to record during training
 #the number of metric names determines how many of the first defined metrics are attempted to be plotted

@@ -107,7 +107,7 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5, pri
             start_state = new_state
             i += 1
             R += (discount_factor**i)*reward
-        if print_episodes: print('steps:',i,'Reward',R)
+        if print_episodes: print(' - steps:',i,'Reward',R)
         stats.append((i, R))
         Q_tables.append(policy.Q.copy())
     episode_lengths, episode_returns = zip(*stats)

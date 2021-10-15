@@ -3,6 +3,7 @@ seeds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 env: "LavaDetEnv9x7" # ["WindyGridworldEnv", "EmptyDenseEnv5x5"]
 policy: "EpsilonGreedy" # ["EpsilonGreedy"]
 epsilon: 0.1
+eps_decay: False
 alpha: 0.5
 gamma: 1
 num_iter: 100
