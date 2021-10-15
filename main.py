@@ -23,7 +23,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
 def multi_seed_run(config):
-
+    config['seeds']=[i for i in range(1000)]
     num_seeds = len(config['seeds'])
     num_iter = config['num_iter']
     num_metrics = len(config['metric_names'])
@@ -48,21 +48,21 @@ def multi_seed_run(config):
     metrics_vanilla_mean = np.mean(metrics_vanilla_all,axis=0)
     metrics_vanilla_std= np.std(metrics_vanilla_all,axis=0)
 
-    metrics_vanilla_episode_returns = metrics_vanilla_all[0]
-    metrics_vanilla_episode_lengths = metrics_vanilla_all[1]
+    metrics_vanilla_episode_returns = metrics_vanilla_all[:,0,:]
+    metrics_vanilla_episode_lengths = metrics_vanilla_all[:,1,:]
     metrics_vanilla_avgperstep = np.sum(metrics_vanilla_episode_returns,axis=0)/np.sum(metrics_vanilla_episode_lengths,axis=0)
 
     
     metrics_double_mean = np.mean(metrics_double_all,axis=0)
     metrics_double_std= np.std(metrics_double_all,axis=0)
 
-    metrics_double_episode_returns = metrics_double_all[0]
-    metrics_double_episode_lengths = metrics_double_all[1]
+    metrics_double_episode_returns = metrics_double_all[:,0,:]
+    metrics_double_episode_lengths = metrics_double_all[:,1,:]
     metrics_double_avgperstep = np.sum(metrics_double_episode_returns,axis=0)/np.sum(metrics_double_episode_lengths,axis=0)
     plt.plot(metrics_vanilla_avgperstep,label="vanilla")
     plt.title("average return per step over the episodes")
     plt.plot(metrics_double_avgperstep,label="double")
-    plt.ylabel("average return")
+    plt.ylabel("average return per step")
     plt.xlabel("episode")
     plt.legend()
     plt.show()
