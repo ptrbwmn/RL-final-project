@@ -13,7 +13,7 @@ import os
 import pickle
 import yaml
 
-from plotting import PlotMap, SavePlot
+from plotting import SavePlot
 
 
 def make_result_directory(config, filename):
@@ -86,8 +86,8 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
          "metrics_double": metrics_double,
          "last_policy_double": last_policy_double,
          "metric_names": metric_names,
-         "last_Q_tables_vanilla": last_Q_tables_vanilla,
-         "last_Q_tables_double": last_Q_tables_double,
+        #  "last_Q_tables_vanilla": last_Q_tables_vanilla,
+        #  "last_Q_tables_double": last_Q_tables_double,
          "env": env
          }
 

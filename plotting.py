@@ -53,33 +53,34 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
         plt.clf()
 
 
-    V_table = np.max(Q_table,axis=1).reshape(4,12)
+    cols = env.cols
+    rows = env.rows
+    V_table = np.max(Q_table,axis=1).reshape(rows,cols)
     print(Q_table)
     plt.imshow(V_table[::-1][:])
     plt.colorbar()
     plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
     plt.clf()
 
-    plt.xlim((0,12))
-    plt.ylim((0,4))
-    cols = env.cols
-    rows = env.rows
+    plt.xlim((0,cols))
+    plt.ylim((0,rows))
     for i in range(cols):
         for j in range(rows):
             state_number = j*cols+i
-            plt.gca().add_patch(Rectangle((i,j),1,1,linewidth=1,edgecolor='r',facecolor=env.get_state_color(state_number)))
+            state_color = env.get_state_color(state_number)
+            plt.gca().add_patch(Rectangle((i,j),1,1,linewidth=1,edgecolor='r',facecolor=state_color))
             max_action = np.argmax(Q_table[state_number])
-            #Q_table[j*12+i,0]/min_Q_value
-            if max_action == 1:
-                plt.arrow(i+0.5, j+0.5, 0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            elif max_action == 2:
-                plt.arrow(i+0.5, j+0.5, 0, -0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            elif max_action == 3:
-                plt.arrow(i+0.5, j+0.5, -0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            elif max_action == 0:
-                plt.arrow(i+0.5, j+0.5, 0, 0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            else:
-                print(max_action)
+            if state_color in ["white", "blue"]:
+                if max_action == 1:
+                    plt.arrow(i+0.5, j+0.5, 0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+                elif max_action == 2:
+                    plt.arrow(i+0.5, j+0.5, 0, -0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+                elif max_action == 3:
+                    plt.arrow(i+0.5, j+0.5, -0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+                elif max_action == 0:
+                    plt.arrow(i+0.5, j+0.5, 0, 0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+                else:
+                    raise NotImplementedError
     # plt.colorbar()
     
     mgr = plt.get_current_fig_manager()
@@ -90,36 +91,36 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     
 
 
-def PlotMap(Q_table,env):
-    V_table = np.max(Q_table,axis=1).reshape(4,12)
-    print(Q_table)
-    plt.imshow(V_table[::-1][:])
-    plt.colorbar()
-    plt.show()
-    plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
-    plt.clf()
+# def PlotMap(Q_table,env):
+#     V_table = np.max(Q_table,axis=1).reshape(4,12)
+#     print(Q_table)
+#     plt.imshow(V_table[::-1][:])
+#     plt.colorbar()
+#     plt.show()
+#     plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
+#     plt.clf()
 
-    plt.xlim((0,12))
-    plt.ylim((0,4))
-    cols = env.cols
-    rows = env.rows
-    for i in range(cols):
-        for j in range(rows):
-            state_number = j*cols+i
-            plt.gca().add_patch(Rectangle((i,j),1,1,linewidth=1,edgecolor='r',facecolor=env.get_state_color(state_number)))
-            max_action = np.argmax(Q_table[state_number])
-            #Q_table[j*12+i,0]/min_Q_value
-            if max_action == 1:
-                plt.arrow(i+0.5, j+0.5, 0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            elif max_action == 2:
-                plt.arrow(i+0.5, j+0.5, 0, -0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            elif max_action == 3:
-                plt.arrow(i+0.5, j+0.5, -0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            elif max_action == 0:
-                plt.arrow(i+0.5, j+0.5, 0, 0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-            else:
-                print(max_action)
-    # plt.colorbar()
-    plt.show()
-    plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
-    plt.clf()
+#     plt.xlim((0,12))
+#     plt.ylim((0,4))
+#     cols = env.cols
+#     rows = env.rows
+#     for i in range(cols):
+#         for j in range(rows):
+#             state_number = j*cols+i
+#             plt.gca().add_patch(Rectangle((i,j),1,1,linewidth=1,edgecolor='r',facecolor=env.get_state_color(state_number)))
+#             max_action = np.argmax(Q_table[state_number])
+#             #Q_table[j*12+i,0]/min_Q_value
+#             if max_action == 1:
+#                 plt.arrow(i+0.5, j+0.5, 0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+#             elif max_action == 2:
+#                 plt.arrow(i+0.5, j+0.5, 0, -0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+#             elif max_action == 3:
+#                 plt.arrow(i+0.5, j+0.5, -0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+#             elif max_action == 0:
+#                 plt.arrow(i+0.5, j+0.5, 0, 0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
+#             else:
+#                 print(max_action)
+#     # plt.colorbar()
+#     plt.show()
+#     plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
+#     plt.clf()
