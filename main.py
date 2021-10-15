@@ -34,13 +34,13 @@ def multi_seed_run(config):
     metrics_vanilla_all = np.zeros((num_seeds,num_metrics,num_iter))
     for i, seed in enumerate(config['seeds']):
         seed_everything(seed=seed)
-        Q, metrics_vanilla, policy_vanilla, Q_tables_vanilla = run_setup(config,"vanilla")
+        Q, metrics_vanilla, policy_vanilla, Q_tables_vanilla, env = run_setup(config,"vanilla")
         metrics_vanilla_all[i]=metrics_vanilla
 
     metrics_double_all = np.zeros((num_seeds,num_metrics,num_iter))
     for i, seed in enumerate(config['seeds']):
         seed_everything(seed=seed)
-        Q1, Q2, metrics_double, policy_double, Q_tables_double = run_setup(config,"double")
+        Q1, Q2, metrics_double, policy_double, Q_tables_double, env = run_setup(config,"double")
         metrics_double_all[i]=metrics_double
     
     metrics_vanilla_mean = np.mean(metrics_vanilla_all,axis=0)
@@ -79,7 +79,7 @@ def multi_seed_run(config):
     last_policy_double = policy_double
     last_Q_tables_vanilla = Q_tables_vanilla
     last_Q_tables_double = Q_tables_double
-    return (last_Q, metrics_vanilla, last_policy_vanilla,last_Q_tables_vanilla), (last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double)
+    return (last_Q, metrics_vanilla, last_policy_vanilla,last_Q_tables_vanilla), (last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double), env
 
 
 if __name__ == '__main__':
@@ -99,13 +99,13 @@ if __name__ == '__main__':
         print(config)
         config_plotting = copy.deepcopy(config)
 
-        vanilla_Q_learning, double_Q_learning = \
+        vanilla_Q_learning, double_Q_learning, env = \
             multi_seed_run(config)
         
         # print(f'AREA UNDER episode_lengths CURVE average: {np.mean(np.array(all_AUC_episode_lengths))}')
         # print(f'AREA UNDER episode_returns CURVE average: {np.mean(np.array(all_AUC_episode_returns))}')
 
-        SaveResults(vanilla_Q_learning, double_Q_learning, config_plotting['metric_names'], dirname, config_plotting)
+        SaveResults(vanilla_Q_learning, double_Q_learning, config_plotting['metric_names'], dirname, config_plotting, env)
 
     end = time.time()
     print("FULL TIME SPENT:")

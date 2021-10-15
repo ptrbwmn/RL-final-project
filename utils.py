@@ -72,7 +72,7 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
     os.environ['PYTHONHASHSEED'] = str(seed)
 
-def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, config):
+def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, config, env):
     last_Q, metrics_vanilla, last_policy_vanilla, last_Q_tables_vanilla = vanilla_Q_learning
     last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double = double_Q_learning
     results = \
@@ -87,7 +87,8 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
          "last_policy_double": last_policy_double,
          "metric_names": metric_names,
          "last_Q_tables_vanilla": last_Q_tables_vanilla,
-         "last_Q_tables_double": last_Q_tables_double
+         "last_Q_tables_double": last_Q_tables_double,
+         "env": env
          }
 
     # print("Saving results:")
@@ -113,9 +114,7 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
         yaml.dump(results, file)
 
     #save plots
-    SavePlot(vanilla_Q_learning, double_Q_learning, metric_names,name,dirname,config,smooth=False)
-
-    PlotMap(last_Q_tables_vanilla[len(last_Q_tables_vanilla)-1])
+    SavePlot(vanilla_Q_learning, double_Q_learning, metric_names,name,dirname,config,last_Q_tables_vanilla[len(last_Q_tables_vanilla)-1],env,smooth=False)
     
 
 
