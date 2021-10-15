@@ -13,6 +13,8 @@ import shutil
 from pathlib import Path
 import copy
 
+from matplotlib import pyplot as plt
+
 from run_setup import run_setup
 from utils import make_result_directory, seed_everything, SaveResults
 
@@ -45,30 +47,26 @@ def multi_seed_run(config):
     
     metrics_vanilla_mean = np.mean(metrics_vanilla_all,axis=0)
     metrics_vanilla_std= np.std(metrics_vanilla_all,axis=0)
+
+    metrics_vanilla_episode_returns = metrics_vanilla_all[0]
+    metrics_vanilla_episode_lengths = metrics_vanilla_all[1]
+    metrics_vanilla_avgperstep = np.sum(metrics_vanilla_episode_returns,axis=0)/np.sum(metrics_vanilla_episode_lengths,axis=0)
+
+    
     metrics_double_mean = np.mean(metrics_double_all,axis=0)
     metrics_double_std= np.std(metrics_double_all,axis=0)
-    # metrics_agg_all = []
-    # for seed_index in range(num_seeds):
-    #     for metric_index in range(num_metrics):
-    #         metric = metrics_vanilla_all[seed_index][metric_index]
-    #         metric_agg = list(zip(np.mean(metric, axis=0), np.std(metric, axis=0)))
-    # num_seeds = len(config['seeds'])
-    # num_iter = config['num_iter']
-    # num_metrics = config['num_metrics']
 
-    # metrics_vanilla_all = np.zeros((num_metrics,num_iter))
-    # for i, seed in enumerate(config['seeds']):
-    #     seed_everything(seed=seed)
-    #     Q, metrics_vanilla, policy_vanilla = run_setup(config,"vanilla")
-    #     metrics_vanilla_all+=(1/num_seeds)*metrics_vanilla
-
-    # metrics_double_all = np.zeros((num_metrics,num_iter))
-    # for i, seed in enumerate(config['seeds']):
-    #     seed_everything(seed=seed)
-    #     Q1, Q2, metrics_double, policy_double = run_setup(config,"double")
-    #     metrics_double_all+=(1/num_seeds)*metrics_double
-
-    # print(metrics_vanilla_all)
+    metrics_double_episode_returns = metrics_double_all[0]
+    metrics_double_episode_lengths = metrics_double_all[1]
+    metrics_double_avgperstep = np.sum(metrics_double_episode_returns,axis=0)/np.sum(metrics_double_episode_lengths,axis=0)
+    plt.plot(metrics_vanilla_avgperstep,label="vanilla")
+    plt.title("average return per step over the episodes")
+    plt.plot(metrics_double_avgperstep,label="double")
+    plt.ylabel("average return")
+    plt.xlabel("episode")
+    plt.legend()
+    plt.show()
+    plt.clf()
     metrics_vanilla = [metrics_vanilla_mean, metrics_vanilla_std]
     metrics_double = [metrics_double_mean, metrics_double_std]
 
