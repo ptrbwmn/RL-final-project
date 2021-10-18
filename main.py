@@ -23,7 +23,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
 def multi_seed_run(config):
-    config['seeds']=[i for i in range(1000)]
+#    config['seeds']=[i for i in range(10)]
     num_seeds = len(config['seeds'])
     num_iter = config['num_iter']
     num_metrics = len(config['metric_names'])
@@ -103,6 +103,7 @@ if __name__ == '__main__':
         # print(f'AREA UNDER episode_lengths CURVE average: {np.mean(np.array(all_AUC_episode_lengths))}')
         # print(f'AREA UNDER episode_returns CURVE average: {np.mean(np.array(all_AUC_episode_returns))}')
 
+        print("SAVING RESULTS")
         SaveResults(vanilla_Q_learning, double_Q_learning, config_plotting['metric_names'], dirname, config_plotting, env)
 
     end = time.time()

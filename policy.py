@@ -21,11 +21,11 @@ class EpsilonGreedyPolicy(object):
         """
         if self.eps_decay:
             self.state_count[obs]+=1
-            epsilon = self.epsilon * 0.9**(self.state_count[obs])
+            epsilon = self.epsilon / self.state_count[obs]
         else:
             epsilon = self.epsilon
         num_actions = self.Q.shape[1]
-        greedy = np.random.choice(2,1,p=[epsilon, 1-epsilon])
+        greedy = np.random.choice([False, True], p=[epsilon, 1-epsilon])
         if greedy:
             max_actions = np.max(self.Q[obs])
             max_action_idc = np.where(self.Q[obs]==max_actions)
@@ -57,11 +57,11 @@ class EpsilonGreedyPolicy_Double_Q(object):
         """
         if self.eps_decay:
             self.state_count[obs]+=1
-            epsilon = self.epsilon * 0.9**(self.state_count[obs])
+            epsilon = self.epsilon / self.state_count[obs]
         else:
             epsilon = self.epsilon
         num_actions = self.Q1.shape[1]
-        greedy = np.random.choice(2,1,p=[epsilon, 1-epsilon])
+        greedy = np.random.choice([False, True], p=[epsilon, 1-epsilon])
         if greedy:
             sum_Q1_Q2 = self.Q1 + self.Q2
             max_actions = np.max(sum_Q1_Q2[obs])

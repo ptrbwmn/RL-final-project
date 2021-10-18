@@ -57,7 +57,7 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     rows = env.rows
     V_table = np.max(Q_table,axis=1).reshape(rows,cols)
     # print(Q_table)
-    plt.imshow(V_table[::-1][:])
+    plt.imshow(V_table[::-1][:], vmin=-30)
     plt.colorbar()
     plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
     plt.clf()
@@ -83,9 +83,9 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
                     raise NotImplementedError
     # plt.colorbar()
     
-    mgr = plt.get_current_fig_manager()
-    mgr.window.setGeometry(0,0,800,50)
-    plt.rcParams["figure.figsize"] = (20,3)
+#    mgr = plt.get_current_fig_manager()
+#    mgr.window.setGeometry(0,0,800,50)
+#    plt.rcParams["figure.figsize"] = (20,3)
     plt.savefig(dirname + "/" + name + "_" + "Q_max_action_arrows" + ".png")
     plt.clf()
     
