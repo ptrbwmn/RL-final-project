@@ -31,5 +31,13 @@ Discussion needed:
         -(epsilon at time=0,Beta) thing (Rogier)
     -suggestion: use number of steps to delta within optimality (+-0 episode return) as performance metric for hyperparameter optimization
 
+-Q-learning is off-policy!! although in specific case of Q-learning there is no explicit target and behavior policy, 
+this distinction is still relevant!
+    -learning curves depend on epsilon of the policy, do we want to look at determistic policy performance or epsilon-greedy policy
+    -true Q value calculation: use deterministic policy or epsilon greedy one
+        -when fair comparison to current estimates?
+            -both estimates and true values same policy? Not possible, estimates always from epsilon greedy policy
+
+
 
 
