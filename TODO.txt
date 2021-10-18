@@ -7,17 +7,29 @@
     -find a way to automatically (or manually) clip x-axis to where slowest algorithm converges to optimal performance (Pieter, make separate py file for reading in pickle)
 -make config option that allows for not saving Q table data (Pieter)
 -save average return per step plot (in main, Pieter)
--store all information for both vanilla and double
+-titles of plots (Pieter):
+    -“learning curves for ENV, HYPERPARAMS”
+    -“V values found by ALG in ENV at final step”
+    -“Max Q value actions  found by ALG in ENV at final step”
+
+-store all information for both vanilla and double (Pieter)
     -plots (and saves)
--policy plots if multiple argmaxes, plot all corresponding arrows
--hyperparameter tuning code:
-    -how are we going to optimize alpha?
-    -no gamma optimization
-    -epsilon is useful to optimize as well (feasible? different for Vanilla and Double?)
-    -suggestion: use number of steps to delta within optimality (+-0 episode return) as performance metric for hyperparameter optimization
--make hyperparameters algorithm specific
+-policy plots if multiple argmaxes, plot all corresponding arrows(Pieter)
+
+-make hyperparameters algorithm specific(Pieter)
+
 
 Discussion needed:
 -think about what error bars represent (plot standard deviation?)
+-hyperparameter tuning code:
+    -how are we going to optimize alpha?
+        -paper: the learning rate was either 
+            -linear(alpha depends on state and action, 1/n at time=t of (s,a)) or 
+            -polynomial()
+    -no gamma optimization
+    -epsilon is useful to optimize as well (feasible? different for Vanilla and Double?)
+        -(epsilon at time=0,Beta) thing (Rogier)
+    -suggestion: use number of steps to delta within optimality (+-0 episode return) as performance metric for hyperparameter optimization
+
 
 
