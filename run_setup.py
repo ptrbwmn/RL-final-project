@@ -9,6 +9,7 @@ from policy import EpsilonGreedyPolicy, EpsilonGreedyPolicy_Double_Q
 from q_learning import q_learning, double_q_learning
 import gym
 import numpy as np
+# from utils import get_q_value
 
 
 def run_setup(config, q_learning_variant):  
@@ -32,6 +33,7 @@ def run_setup(config, q_learning_variant):
         env = gym.make('MiniGrid-LavaStoch80-9x7-v0')
     elif env == "LavaWorld5x7Determ":
         env = LavaWorld5x7Determ()
+        # q, q_coord = get_q_value(env, 'LavaWorld5x7Determ', gamma, save_dir)
     elif env == "LavaWorld5x7StochMovement":
         env = LavaWorld5x7StochMovement()
     elif env == "LavaWorld5x7StochRewards":
