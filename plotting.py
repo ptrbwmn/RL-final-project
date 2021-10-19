@@ -13,8 +13,8 @@ def running_mean(vals, n=1):
 
 
 def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname, config, Q_table, Q_tables_double, env, smooth=False):
-    _, metrics_vanilla, _, _ = vanilla_Q_learning
-    _, _, metrics_double, _, _ = double_Q_learning
+    _, metrics_vanilla, _, _, metrics_vanilla_avgperstep = vanilla_Q_learning
+    _, _, metrics_double, _, _, metrics_double_avgperstep = double_Q_learning
 
     metrics_vanilla_mean, metrics_vanilla_std = metrics_vanilla
     metrics_double_mean, metrics_double_std = metrics_double
@@ -138,6 +138,16 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
                 "Q_max_action_arrows_double" + ".png")
     plt.clf()
 
+    plt.plot(metrics_vanilla_avgperstep, label="vanilla")
+    plt.title("average return per step over the episodes")
+    plt.plot(metrics_double_avgperstep, label="double")
+    plt.ylabel("average return per step")
+    plt.xlabel("episode")
+    plt.legend()
+    plt.savefig(dirname + '/' + name + '_' + 'avgperstep.png')
+    # plt.show()
+    plt.clf()
+
 # def PlotMap(Q_table,env):
 #     V_table = np.max(Q_table,axis=1).reshape(4,12)
 #     print(Q_table)
@@ -171,4 +181,3 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
 #     plt.show()
 #     plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
 #     plt.clf()
-

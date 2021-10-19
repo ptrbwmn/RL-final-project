@@ -43,20 +43,21 @@ def make_dirname(config, pickle_file_name=False):
 
     timestamp = datetime.now()
     dirname = "results/" \
-    + str(policy) + "/" \
-    + str(env) + "/" \
-    + str(timestamp).replace(" ", "_").replace(".", "_").replace(":", "-")
+        + str(policy) + "/" \
+        + str(env) + "/" \
+        + str(timestamp).replace(" ", "_").replace(".", "_").replace(":", "-")
 
     if pickle_file_name:
         print("IN PICKLE FILE NAME")
-        #add functionality to abbreviate values, e.g. Random Acquisition -> RA
+        # add functionality to abbreviate values, e.g. Random Acquisition -> RA
         dirname = str(policy) + "_" + str(env) \
-        + "_" + "numiter" + str(num_iter) \
-        + "_" + "epsilon0_" + str(epsilon) \
-        + "_" + "epsilondecay_" + str(epsilon_decay) \
-        + "_" + "alphadecay_" + str(alpha_decay) \
-        + "_" + "gamma_" + str(gamma) \
-        + "." + str(timestamp).replace(" ", "_").replace(".", "_").replace(":", "-")
+            + "_" + "numiter" + str(num_iter) \
+            + "_" + "epsilon0_" + str(epsilon) \
+            + "_" + "epsilondecay_" + str(epsilon_decay) \
+            + "_" + "alphadecay_" + str(alpha_decay) \
+            + "_" + "gamma_" + str(gamma) \
+            + "." + str(timestamp).replace(" ",
+                                           "_").replace(".", "_").replace(":", "-")
 
     return dirname
 
@@ -75,9 +76,10 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
     os.environ['PYTHONHASHSEED'] = str(seed)
 
+
 def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, config, env):
-    last_Q, metrics_vanilla, last_policy_vanilla, last_Q_tables_vanilla = vanilla_Q_learning
-    last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double = double_Q_learning
+    last_Q, metrics_vanilla, last_policy_vanilla, last_Q_tables_vanilla, metrics_vanilla_avgperstep = vanilla_Q_learning
+    last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double, metrics_double_avgperstep = double_Q_learning
     results = \
         {"vanilla_Q_learning": vanilla_Q_learning,
          "double_Q_learning": double_Q_learning,
@@ -89,9 +91,11 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
          "metrics_double": metrics_double,
          "last_policy_double": last_policy_double,
          "metric_names": metric_names,
-        #  "last_Q_tables_vanilla": last_Q_tables_vanilla,
-        #  "last_Q_tables_double": last_Q_tables_double,
-         "env": env
+         #  "last_Q_tables_vanilla": last_Q_tables_vanilla,
+         #  "last_Q_tables_double": last_Q_tables_double,
+         "env": env,
+         "metrics_vanilla_avgperstep": metrics_vanilla_avgperstep,
+         "metrics_double_avgperstep": metrics_double_avgperstep
          }
 
     # print("Saving results:")
@@ -106,15 +110,15 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    result_pickle_name = make_dirname(config,True)
+    result_pickle_name = make_dirname(config, True)
     b_file = open(folder + result_pickle_name + ".pkl", "wb")
     pickle.dump(results, b_file)
     b_file.close()
 
-   #save plots
+   # save plots
     SavePlot(
-        vanilla_Q_learning, 
-        double_Q_learning, 
+        vanilla_Q_learning,
+        double_Q_learning,
         metric_names,
         name,
         dirname,
@@ -129,9 +133,6 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
  #   results = {key: str(val) for key, val in results.items()}
  #   with open(dirname + "/" + "results.yaml", 'w') as file:
  #       yaml.dump(results, file)
-
-     
-
 
 
 def _get_q_value(env, env_name, gamma, theta=0.0001):

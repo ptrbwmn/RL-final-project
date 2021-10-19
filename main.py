@@ -80,7 +80,7 @@ def multi_seed_run(config):
     last_policy_double = policy_double
     last_Q_tables_vanilla = Q_tables_vanilla
     last_Q_tables_double = Q_tables_double
-    return (last_Q, metrics_vanilla, last_policy_vanilla, last_Q_tables_vanilla), (last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double), env
+    return (last_Q, metrics_vanilla, last_policy_vanilla, last_Q_tables_vanilla, metrics_vanilla_avgperstep), (last_Q1, last_Q2, metrics_double, last_policy_double, last_Q_tables_double, metrics_double_avgperstep), env
 
 
 if __name__ == '__main__':
@@ -113,4 +113,3 @@ if __name__ == '__main__':
     end = time.time()
     print("FULL TIME SPENT:")
     print(end - start)
-
