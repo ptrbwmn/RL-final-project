@@ -1,23 +1,22 @@
-import gym
-import numpy as np
 import sys
-from gym.envs.toy_text import discrete
+from copy import deepcopy
+from itertools import product
 
 import gym
-from gym import error, spaces, utils
-from gym.utils import seeding
 import numpy as np
-
-from copy import deepcopy 
+from gym import error, spaces, utils
+from gym.envs.toy_text import discrete
+from gym.utils import seeding
 
 UP = 0
 RIGHT = 1
 DOWN = 2
 LEFT = 3
 
+
 class WindyGridworldEnv(discrete.DiscreteEnv):
 
-    metadata = {'render.modes': ['human', 'ansi']}
+    metadata = {"render.modes": ["human", "ansi"]}
 
     def _limit_coordinates(self, coord):
         coord[0] = min(coord[0], self.shape[0] - 1)
@@ -27,7 +26,11 @@ class WindyGridworldEnv(discrete.DiscreteEnv):
         return coord
 
     def _calculate_transition_prob(self, current, delta, winds):
-        new_position = np.array(current) + np.array(delta) + np.array([-1, 0]) * winds[tuple(current)]
+        new_position = (
+            np.array(current)
+            + np.array(delta)
+            + np.array([-1, 0]) * winds[tuple(current)]
+        )
         new_position = self._limit_coordinates(new_position).astype(int)
         new_state = np.ravel_multi_index(tuple(new_position), self.shape)
         is_done = tuple(new_position) == (3, 7)
@@ -41,14 +44,14 @@ class WindyGridworldEnv(discrete.DiscreteEnv):
 
         # Wind strength
         winds = np.zeros(self.shape)
-        winds[:,[3,4,5,8]] = 1
-        winds[:,[6,7]] = 2
+        winds[:, [3, 4, 5, 8]] = 1
+        winds[:, [6, 7]] = 2
 
         # Calculate transition probabilities
         P = {}
         for s in range(nS):
             position = np.unravel_index(s, self.shape)
-            P[s] = { a : [] for a in range(nA) }
+            P[s] = {a: [] for a in range(nA)}
             P[s][UP] = self._calculate_transition_prob(position, [-1, 0], winds)
             P[s][RIGHT] = self._calculate_transition_prob(position, [0, 1], winds)
             P[s][DOWN] = self._calculate_transition_prob(position, [1, 0], winds)
@@ -56,25 +59,25 @@ class WindyGridworldEnv(discrete.DiscreteEnv):
 
         # We always start in state (3, 0)
         isd = np.zeros(nS)
-        isd[np.ravel_multi_index((3,0), self.shape)] = 1.0
+        isd[np.ravel_multi_index((3, 0), self.shape)] = 1.0
 
         super(WindyGridworldEnv, self).__init__(nS, nA, P, isd)
 
-    def render(self, mode='human', close=False):
+    def render(self, mode="human", close=False):
         self._render(mode, close)
 
-    def _render(self, mode='human', close=False):
+    def _render(self, mode="human", close=False):
         if close:
             return
 
-        outfile = StringIO() if mode == 'ansi' else sys.stdout
+        outfile = StringIO() if mode == "ansi" else sys.stdout
 
         for s in range(self.nS):
             position = np.unravel_index(s, self.shape)
             # print(self.s)
             if self.s == s:
                 output = " x "
-            elif position == (3,7):
+            elif position == (3, 7):
                 output = " T "
             else:
                 output = " o "
@@ -88,21 +91,23 @@ class WindyGridworldEnv(discrete.DiscreteEnv):
             outfile.write(output)
         outfile.write("\n")
 
+
 class BasicEnv2(gym.Env):
-    metadata = {'render.modes': ['human']}
+    metadata = {"render.modes": ["human"]}
 
     def __init__(self):
-        # 
+        #
         self.nS = 2
         self.nA = 12
         self.action_space = spaces.Discrete(self.nA)
         self.observation_space = spaces.Discrete(self.nS)
         self.state = 0
+
     def step(self, action):
 
-        # 
+        #
         if self.state == 1:
-            reward = np.random.normal(-0.1,1)
+            reward = np.random.normal(-0.1, 1)
             done = True
         elif self.state == 0:
             if action == 0:
@@ -112,25 +117,28 @@ class BasicEnv2(gym.Env):
                 reward = 0
                 self.state = 1
                 done = False
-            else: print('ERROR')
+            else:
+                print("ERROR")
         info = {}
-        state=self.state
+        state = self.state
         return state, reward, done, info
 
     def reset(self):
         self.state = 0
         return self.state
-  
-    def render(self, mode='human'):
+
+    def render(self, mode="human"):
         pass
 
     def close(self):
         pass
 
+
 class CliffWalkingEnv(gym.Env):
-    ''' Cliff Walking Environment
-        See the README.md file from https://github.com/caburu/gym-cliffwalking
-    '''
+    """Cliff Walking Environment
+    See the README.md file from https://github.com/caburu/gym-cliffwalking
+    """
+
     # There is no renderization yet
     # metadata = {'render.modes': ['human']}
 
@@ -142,28 +150,27 @@ class CliffWalkingEnv(gym.Env):
         self.nA = 4
         self.rows = 4
         self.cols = 12
-        self.start = [0,0]
-        self.goal = [0,11]
+        self.start = [0, 0]
+        self.goal = [0, 11]
         self.current_state = None
 
         # There are four actions: up, down, left and right
         self.action_space = spaces.Discrete(4)
 
-         # observation is the x, y coordinate of the grid
-        self.observation_space = spaces.Discrete(self.rows*self.cols)
-
+        # observation is the x, y coordinate of the grid
+        self.observation_space = spaces.Discrete(self.rows * self.cols)
 
     def step(self, action):
         new_state = deepcopy(self.current_state)
 
-        if action == 1: #right
-            new_state[1] = min(new_state[1]+1, self.cols-1)
-        elif action == 2: #down
-            new_state[0] = max(new_state[0]-1, 0)
-        elif action == 3: #left
-            new_state[1] = max(new_state[1]-1, 0)
-        elif action == 0: #up
-            new_state[0] = min(new_state[0]+1, self.rows-1)
+        if action == 1:  # right
+            new_state[1] = min(new_state[1] + 1, self.cols - 1)
+        elif action == 2:  # down
+            new_state[0] = max(new_state[0] - 1, 0)
+        elif action == 3:  # left
+            new_state[1] = max(new_state[1] - 1, 0)
+        elif action == 0:  # up
+            new_state[0] = min(new_state[0] + 1, self.rows - 1)
         else:
             raise Exception("Invalid action.")
         self.current_state = new_state
@@ -183,14 +190,14 @@ class CliffWalkingEnv(gym.Env):
         self.current_state = self.start
         return self.observation(self.current_state)
 
-    def render(self, mode='human'):
+    def render(self, mode="human"):
         pass
 
     def close(self):
         pass
 
-    def get_state_color(self,state_number):
-        if state_number in [1,2,3,4,5,6,7,8,9,10]:
+    def get_state_color(self, state_number):
+        if state_number in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
             return "grey"
         elif state_number == 11:
             return "green"
@@ -199,16 +206,26 @@ class CliffWalkingEnv(gym.Env):
         else:
             return "white"
 
+
 class BaseGrid(gym.Env):
-    ''' 
-    '''
+    """"""
+
     # There is no renderization yet
     # metadata = {'render.modes': ['human']}
 
-    def observation(self, state):
-        return state[0] * self.cols + state[1]
-
-    def __init__(self, nS, nA, rows, cols, start, goal, final_reward, lava_cells, p_forward):
+    def __init__(
+        self,
+        nS,
+        nA,
+        rows,
+        cols,
+        start,
+        goal,
+        final_reward,
+        lava_cells,
+        p_forward,
+        stoch_reward=False,
+    ):
         self.nS = nS
         self.nA = nA
         self.rows = rows
@@ -218,65 +235,107 @@ class BaseGrid(gym.Env):
         self.final_reward = final_reward
         self.lava_cells = lava_cells
         self.p_forward = p_forward
+        self.stoch_reward = stoch_reward
+
         self.current_state = None
 
         # There are four actions: up, down, left and right
         self.action_space = spaces.Discrete(4)
 
-         # observation is the x, y coordinate of the grid
-        self.observation_space = spaces.Discrete(self.rows*self.cols)
+        # observation is the x, y coordinate of the grid
+        self.observation_space = spaces.Discrete(self.rows * self.cols)
+
+        # transition_probabilities
+        self.P = self._get_transitions()
+
+    def observation(self, state):
+        return state[0] * self.cols + state[1]
 
     def get_state_color(self, state_number):
         if state_number in []:
-            return "grey" # cliff
+            return "grey"  # cliff
         elif state_number in [self.observation(cell) for cell in self.lava_cells]:
-            return "orange" # lava
+            return "orange"  # lava
         elif state_number == self.observation(self.start):
-            return "blue" # start position
+            return "blue"  # start position
         elif state_number == self.observation(self.goal):
-            return "green" # goal position
+            return "green"  # goal position
         else:
             return "white"
 
-    def step(self, action):
-        new_state = deepcopy(self.current_state)
-
-        pf = self.p_forward
-        move_distortion = np.random.choice([0,1,3], p = [pf, (1-pf)/2, (1-pf)/2])
-        action = (action + move_distortion) % 4
-
-        if action == 0: #up
-            new_state[0] = min(new_state[0]+1, self.rows-1)
-        elif action == 1: #right
-            new_state[1] = min(new_state[1]+1, self.cols-1)
-        elif action == 2: #down
-            new_state[0] = max(new_state[0]-1, 0)
-        elif action == 3: #left
-            new_state[1] = max(new_state[1]-1, 0)
+    def _new_loc(self, r, c, action):
+        if action == UP:  # 0
+            r2 = min(r + 1, self.rows - 1)
+            return [r2, c]
+        elif action == RIGHT:  # 1
+            c2 = min(c + 1, self.cols - 1)
+            return [r, c2]
+        elif action == DOWN:  # 2
+            r2 = max(r - 1, 0)
+            return [r2, c]
+        elif action == LEFT:  # 3
+            c2 = max(c - 1, 0)
+            return [r, c2]
         else:
             raise Exception("Invalid action.")
+
+    def _get_transitions(self):
+        """transition matrix"""
+        # initialise
+        transitions = {
+            (r, c): {a: [] for a in range(self.nA)}
+            for r, c in product(range(self.rows), range(self.cols))
+        }
+
+        # loop over state/action pairs
+        for r, c, a in product(range(self.rows), range(self.cols), range(self.nA)):
+
+            possible_a = [(a + d) % 4 for d in [-1, 0, 1]]
+            prob_side = (1 - self.p_forward) / 2
+            probs = [prob_side, self.p_forward, prob_side]
+            new_locs = [self._new_loc(r, c, pa) for pa in possible_a]
+
+            if self.stoch_reward:
+                rewards = [-12, 10]
+            else:
+                rewards = [-1]
+
+            for new_loc, loc_prob in zip(new_locs, probs):
+                for reward in rewards:
+                    done = False
+                    if new_loc in self.lava_cells:
+                        reward = -1000
+                        done = True
+                    if new_loc == self.goal:
+                        reward = self.final_reward
+                        done = True
+                    transitions[(r, c)][a].append(
+                        (loc_prob / len(rewards), new_loc, reward, done)
+                    )
+
+        # 0 reward after reaching goal state
+        for a in range(self.nA):
+            transitions[tuple(self.goal)][a] = [
+                (p, tuple(self.goal), 0, True)
+                for (p, l, r, d) in transitions[tuple(self.goal)][a]
+            ]
+
+        return transitions
+
+    def step(self, action):
+        next_steps = self.P[tuple(self.current_state)][action]
+        probs = [p for p, _, _, _ in next_steps]
+        chosen = np.random.choice(range(len(next_steps)), p=probs)
+        _, new_state, reward, is_terminal = next_steps[chosen]
+
         self.current_state = new_state
+        return self.observation(new_state), reward, is_terminal, {}
 
-        reward = -1.0
-        is_terminal = False
-
-        # Case: you walked onto lava
-        if self.current_state in self.lava_cells:
-            reward = -1000.0
-            is_terminal = True
-
-        # Case: goal reached
-        if self.current_state == self.goal:
-            reward = self.final_reward
-            is_terminal = True
-
-        return self.observation(self.current_state), reward, is_terminal, {}
- 
     def reset(self):
         self.current_state = self.start
         return self.observation(self.current_state)
 
-    def render(self, mode='human'):
+    def render(self, mode="human"):
         pass
 
     def close(self):
@@ -284,319 +343,314 @@ class BaseGrid(gym.Env):
 
 
 class LavaWorld5x7Determ(BaseGrid):
-    ''' 
-    '''
+    """"""
+
     def __init__(self):
         super().__init__(
-            nS = 35,
-            nA = 4, 
-            rows = 5, 
-            cols = 7,
-            start = [4,0],
-            goal = [4,6],
-            final_reward = 8,
-            lava_cells = [[4,2],[4,3],[4,4],[0,2],[0,3],[0,4]],
-            p_forward = 1.0
+            nS=35,
+            nA=4,
+            rows=5,
+            cols=7,
+            start=[4, 0],
+            goal=[4, 6],
+            final_reward=8,
+            lava_cells=[[4, 2], [4, 3], [4, 4], [0, 2], [0, 3], [0, 4]],
+            p_forward=1.0,
+            stoch_reward=False,
         )
 
 
 class LavaWorld5x7StochMovement(BaseGrid):
-    ''' 
-    '''
+    """"""
+
     def __init__(self):
         super().__init__(
-            nS = 35,
-            nA = 4, 
-            rows = 5, 
-            cols = 7,
-            start = [4,0],
-            goal = [4,6],
-            final_reward = 10,
-            lava_cells = [[4,2],[4,3],[4,4],[0,2],[0,3],[0,4]],
-            p_forward = 0.8
+            nS=35,
+            nA=4,
+            rows=5,
+            cols=7,
+            start=[4, 0],
+            goal=[4, 6],
+            final_reward=10,
+            lava_cells=[[4, 2], [4, 3], [4, 4], [0, 2], [0, 3], [0, 4]],
+            p_forward=0.8,
+            stoch_reward=False,
+        )
+
+
+class LavaWorld5x7StochRewards(BaseGrid):
+    """"""
+
+    def __init__(self):
+        super().__init__(
+            nS=35,
+            nA=4,
+            rows=5,
+            cols=7,
+            start=[4, 0],
+            goal=[4, 6],
+            final_reward=10,
+            lava_cells=[[4, 2], [4, 3], [4, 4], [0, 2], [0, 3], [0, 4]],
+            p_forward=1,
+            stoch_reward=True,
         )
 
 
 class LavaWorld13x15Determ(BaseGrid):
-    ''' 
-    '''
+    """"""
+
     def __init__(self):
         super().__init__(
-            nS = 195,
-            nA = 4, 
-            rows = 13, 
-            cols = 15,
-            start = [12,0],
-            goal = [12,14],
-            final_reward = 26,
-            lava_cells = [
-                [12,2],[12,3],[12,4],[12,5],[12,6],[12,7],[12,8],[12,9],[12,10],[12,11],[12,12], 
-                [11, 7], [10,7], [9,7],
-                [8,2],[8,3],[8,4],[8,5],[8,6],[8,7],[8,8],[8,9],[8,10],[8,11],[8,12], 
-                [7,7], [5,7],
-                [4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],[4,9],[4,10],[4,11],[4,12], 
-                [0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12]
+            nS=195,
+            nA=4,
+            rows=13,
+            cols=15,
+            start=[12, 0],
+            goal=[12, 14],
+            final_reward=26,
+            lava_cells=[
+                [12, 2],
+                [12, 3],
+                [12, 4],
+                [12, 5],
+                [12, 6],
+                [12, 7],
+                [12, 8],
+                [12, 9],
+                [12, 10],
+                [12, 11],
+                [12, 12],
+                [11, 7],
+                [10, 7],
+                [9, 7],
+                [8, 2],
+                [8, 3],
+                [8, 4],
+                [8, 5],
+                [8, 6],
+                [8, 7],
+                [8, 8],
+                [8, 9],
+                [8, 10],
+                [8, 11],
+                [8, 12],
+                [7, 7],
+                [5, 7],
+                [4, 2],
+                [4, 3],
+                [4, 4],
+                [4, 5],
+                [4, 6],
+                [4, 7],
+                [4, 8],
+                [4, 9],
+                [4, 10],
+                [4, 11],
+                [4, 12],
+                [0, 2],
+                [0, 3],
+                [0, 4],
+                [0, 5],
+                [0, 6],
+                [0, 7],
+                [0, 8],
+                [0, 9],
+                [0, 10],
+                [0, 11],
+                [0, 12],
             ],
-            p_forward = 1.0
+            p_forward=1.0,
+            stoch_reward=False,
         )
 
 
 class LavaWorld13x15StochMovement(BaseGrid):
-    ''' 
-    '''
+    """"""
+
     def __init__(self):
         super().__init__(
-            nS = 195,
-            nA = 4, 
-            rows = 13, 
-            cols = 15,
-            start = [12,0],
-            goal = [12,14],
-            final_reward = 34,
-            lava_cells = [
-                [12,2],[12,3],[12,4],[12,5],[12,6],[12,7],[12,8],[12,9],[12,10],[12,11],[12,12], 
-                [11, 7], [10,7], [9,7],
-                [8,2],[8,3],[8,4],[8,5],[8,6],[8,7],[8,8],[8,9],[8,10],[8,11],[8,12], 
-                [7,7], [5,7],
-                [4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],[4,9],[4,10],[4,11],[4,12], 
-                [0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12]
+            nS=195,
+            nA=4,
+            rows=13,
+            cols=15,
+            start=[12, 0],
+            goal=[12, 14],
+            final_reward=34,
+            lava_cells=[
+                [12, 2],
+                [12, 3],
+                [12, 4],
+                [12, 5],
+                [12, 6],
+                [12, 7],
+                [12, 8],
+                [12, 9],
+                [12, 10],
+                [12, 11],
+                [12, 12],
+                [11, 7],
+                [10, 7],
+                [9, 7],
+                [8, 2],
+                [8, 3],
+                [8, 4],
+                [8, 5],
+                [8, 6],
+                [8, 7],
+                [8, 8],
+                [8, 9],
+                [8, 10],
+                [8, 11],
+                [8, 12],
+                [7, 7],
+                [5, 7],
+                [4, 2],
+                [4, 3],
+                [4, 4],
+                [4, 5],
+                [4, 6],
+                [4, 7],
+                [4, 8],
+                [4, 9],
+                [4, 10],
+                [4, 11],
+                [4, 12],
+                [0, 2],
+                [0, 3],
+                [0, 4],
+                [0, 5],
+                [0, 6],
+                [0, 7],
+                [0, 8],
+                [0, 9],
+                [0, 10],
+                [0, 11],
+                [0, 12],
             ],
-            p_forward = 0.8
+            p_forward=0.8,
+            stoch_reward=False,
         )
 
 
-class SimpleWorld3x3Determ(gym.Env):
-    ''' 
-    '''
-    # There is no renderization yet
-    # metadata = {'render.modes': ['human']}
-
-    def observation(self, state):
-        return state[0] * self.cols + state[1]
+class LavaWorld13x15StochRewards(BaseGrid):
+    """"""
 
     def __init__(self):
-        self.nS = 9
-        self.nA = 4
-        self.rows = 3
-        self.cols = 3
-        self.start = [2,0]
-        self.goal = [0,2]
-        self.lava_cells = []
-        self.current_state = None
-        self.p_forward = 1#0.8
-        # There are four actions: up, down, left and right
-        self.action_space = spaces.Discrete(4)
-
-         # observation is the x, y coordinate of the grid
-        self.observation_space = spaces.Discrete(self.rows*self.cols)
-
-    def get_state_color(self,state_number):
-        if state_number in []:
-            return "grey" # cliff
-        elif state_number in []:
-            return "orange" # lava
-        elif state_number in [6]:
-            return "blue" # start position
-        elif state_number in [2]:
-            return "green" # goal position
-        else:
-            return "white"
-
-    def step(self, action):
-        new_state = deepcopy(self.current_state)
-
-        pf = self.p_forward
-        move_distortion = np.random.choice([0,1,3], p = [pf, (1-pf)/2, (1-pf)/2])
-        action = (action + move_distortion) % 4
-
-        if action == 0: #up
-            new_state[0] = min(new_state[0]+1, self.rows-1)
-        elif action == 1: #right
-            new_state[1] = min(new_state[1]+1, self.cols-1)
-        elif action == 2: #down
-            new_state[0] = max(new_state[0]-1, 0)
-        elif action == 3: #left
-            new_state[1] = max(new_state[1]-1, 0)
-        else:
-            raise Exception("Invalid action.")
-        self.current_state = new_state
-
-        reward = -1.0
-        is_terminal = False
-        # Case: you walked onto lava
-        if self.current_state in self.lava_cells:
-            reward = -100.0
-            is_terminal = True
-        # Case: goal reached
-        if self.current_state == self.goal:
-            reward = +10.0
-            is_terminal = True
-        return self.observation(self.current_state), reward, is_terminal, {}
-
-    def reset(self):
-        self.current_state = self.start
-        return self.observation(self.current_state)
-
-    def render(self, mode='human'):
-        pass
-
-    def close(self):
-        pass
+        super().__init__(
+            nS=195,
+            nA=4,
+            rows=13,
+            cols=15,
+            start=[12, 0],
+            goal=[12, 14],
+            final_reward=34,
+            lava_cells=[
+                [12, 2],
+                [12, 3],
+                [12, 4],
+                [12, 5],
+                [12, 6],
+                [12, 7],
+                [12, 8],
+                [12, 9],
+                [12, 10],
+                [12, 11],
+                [12, 12],
+                [11, 7],
+                [10, 7],
+                [9, 7],
+                [8, 2],
+                [8, 3],
+                [8, 4],
+                [8, 5],
+                [8, 6],
+                [8, 7],
+                [8, 8],
+                [8, 9],
+                [8, 10],
+                [8, 11],
+                [8, 12],
+                [7, 7],
+                [5, 7],
+                [4, 2],
+                [4, 3],
+                [4, 4],
+                [4, 5],
+                [4, 6],
+                [4, 7],
+                [4, 8],
+                [4, 9],
+                [4, 10],
+                [4, 11],
+                [4, 12],
+                [0, 2],
+                [0, 3],
+                [0, 4],
+                [0, 5],
+                [0, 6],
+                [0, 7],
+                [0, 8],
+                [0, 9],
+                [0, 10],
+                [0, 11],
+                [0, 12],
+            ],
+            p_forward=1,
+            stoch_reward=True,
+        )
 
 
-class SimpleWorld3x3StochMovement(gym.Env):
-    ''' 
-    '''
-    # There is no renderization yet
-    # metadata = {'render.modes': ['human']}
-
-    def observation(self, state):
-        return state[0] * self.cols + state[1]
+class SimpleWorld3x3Determ(BaseGrid):
+    """"""
 
     def __init__(self):
-        self.nS = 9
-        self.nA = 4
-        self.rows = 3
-        self.cols = 3
-        self.start = [2,0]
-        self.goal = [0,2]
-        #self.lava_cells = []
-        self.current_state = None
-        self.p_forward = 0.8
-        # There are four actions: up, down, left and right
-        self.action_space = spaces.Discrete(4)
+        super().__init__(
+            nS=9,
+            nA=4,
+            rows=3,
+            cols=3,
+            start=[2, 0],
+            goal=[0, 2],
+            final_reward=10,
+            lava_cells=[],
+            p_forward=1,
+            stoch_reward=False,
+        )
 
-         # observation is the x, y coordinate of the grid
-        self.observation_space = spaces.Discrete(self.rows*self.cols)
 
-    def get_state_color(self,state_number):
-        if state_number in []:
-            return "grey" # cliff
-        elif state_number in []:
-            return "orange" # lava
-        elif state_number in [6]:
-            return "blue" # start position
-        elif state_number in [2]:
-            return "green" # goal position
-        else:
-            return "white"
-
-    def step(self, action):
-        new_state = deepcopy(self.current_state)
-
-        pf = self.p_forward
-        move_distortion = np.random.choice([0,1,3], p = [pf, (1-pf)/2, (1-pf)/2])
-        action = (action + move_distortion) % 4
-
-        if action == 0: #up
-            new_state[0] = min(new_state[0]+1, self.rows-1)
-        elif action == 1: #right
-            new_state[1] = min(new_state[1]+1, self.cols-1)
-        elif action == 2: #down
-            new_state[0] = max(new_state[0]-1, 0)
-        elif action == 3: #left
-            new_state[1] = max(new_state[1]-1, 0)
-        else:
-            raise Exception("Invalid action.")
-        self.current_state = new_state
-
-        reward = -1.0
-        is_terminal = False
-        # Case: you walked onto lava
-        #if self.current_state in self.lava_cells:
-        #    reward = -100.0
-        #   is_terminal = True
-        # Case: goal reached
-        if self.current_state == self.goal:
-            reward = +10.0
-            is_terminal = True
-        return self.observation(self.current_state), reward, is_terminal, {}
-
-    def reset(self):
-        self.current_state = self.start
-        return self.observation(self.current_state)
-
-    def render(self, mode='human'):
-        pass
-
-    def close(self):
-        pass
-
-class SimpleWorld3x3StochRewards(gym.Env):
-    ''' 
-    '''
-    # There is no renderization yet
-    # metadata = {'render.modes': ['human']}
-
-    def observation(self, state):
-        return state[0] * self.cols + state[1]
+class SimpleWorld3x3StochMovement(BaseGrid):
+    """"""
 
     def __init__(self):
-        self.nS = 9
-        self.nA = 4
-        self.rows = 3
-        self.cols = 3
-        self.start = [2,0]
-        self.goal = [0,2]
-        #self.lava_cells = []
-        self.current_state = None
-        #self.p_forward = 1.
-        # There are four actions: up, down, left and right
-        self.action_space = spaces.Discrete(4)
+        super().__init__(
+            nS=9,
+            nA=4,
+            rows=3,
+            cols=3,
+            start=[2, 0],
+            goal=[0, 2],
+            final_reward=10,
+            lava_cells=[],
+            p_forward=0.8,
+            stoch_reward=False,
+        )
 
-         # observation is the x, y coordinate of the grid
-        self.observation_space = spaces.Discrete(self.rows*self.cols)
 
-    def get_state_color(self,state_number):
-        if state_number in []:
-            return "grey" # cliff
-        elif state_number in []:
-            return "orange" # lava
-        elif state_number in [6]:
-            return "blue" # start position
-        elif state_number in [2]:
-            return "green" # goal position
-        else:
-            return "white"
+class SimpleWorld3x3StochRewards(BaseGrid):
+    """"""
 
-    def step(self, action):
-        new_state = deepcopy(self.current_state)
+    def __init__(self):
+        super().__init__(
+            nS=9,
+            nA=4,
+            rows=3,
+            cols=3,
+            start=[2, 0],
+            goal=[0, 2],
+            final_reward=5,
+            lava_cells=[],
+            p_forward=1,
+            stoch_reward=True,
+        )
 
-        #pf = self.p_forward
-        #move_distortion = np.random.choice([0,1,3], p = [pf, (1-pf)/2, (1-pf)/2])
-        #action = (action + move_distortion) % 4
-
-        if action == 0: #up
-            new_state[0] = min(new_state[0]+1, self.rows-1)
-        elif action == 1: #right
-            new_state[1] = min(new_state[1]+1, self.cols-1)
-        elif action == 2: #down
-            new_state[0] = max(new_state[0]-1, 0)
-        elif action == 3: #left
-            new_state[1] = max(new_state[1]-1, 0)
-        else:
-            raise Exception("Invalid action.")
-        self.current_state = new_state
-
-        #reward = -1.0
-        reward = np.random.choice([-12,10])
-        
-        is_terminal = False
-        # Case: you walked onto lava
-        
-        # Case: goal reached
-        if self.current_state == self.goal:
-            reward = +5.0
-            is_terminal = True
-        return self.observation(self.current_state), reward, is_terminal, {}
-
-    def reset(self):
-        self.current_state = self.start
-        return self.observation(self.current_state)
-
-    def render(self, mode='human'):
-        pass
-
-    def close(self):
-        pass
-
+        # TODO: why is final_reward 5 here?

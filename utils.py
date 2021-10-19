@@ -14,6 +14,7 @@ import pickle
 import yaml
 
 from plotting import SavePlot
+from value_iteration import value_iter_q
 
 
 def make_result_directory(config, filename):
@@ -120,5 +121,21 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
 
 
 
+def _get_q_value(env, env_name, gamma, theta=0.0001):
+    q, q_coord = value_iter_q(env, theta, gamma)
+    return q, q_coord
 
 
+def get_q_value(env, env_name, gamma, save_dir, theta=0.0001):
+    filename = os.path.join(save_dir, f'{env_name}_{gamma}_{theta}.pkl')
+
+    if os.path.exists(filename):
+        q, q_coord = pickle.load(filename)
+        return q, q_coord
+
+    if not os.path.isdir(save_dir):
+        os.path.mkdir(save_dir)
+    q, q_coord = _get_q_value(env, env_name, gamma, theta)
+    with open(filename, 'wb') as f:
+        pickle.dump([q, q_coord], f)
+    return q, q_coord
