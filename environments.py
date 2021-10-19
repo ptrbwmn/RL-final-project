@@ -348,6 +348,7 @@ class LavaWorld5x7Determ(BaseGrid):
             final_reward=8,
             lava_cells=[[4, 2], [4, 3], [4, 4], [0, 2], [0, 3], [0, 4]],
             p_forward=1.0,
+            stoch_reward=False,
         )
 
 
@@ -365,6 +366,25 @@ class LavaWorld5x7StochMovement(BaseGrid):
             final_reward=10,
             lava_cells=[[4, 2], [4, 3], [4, 4], [0, 2], [0, 3], [0, 4]],
             p_forward=0.8,
+            stoch_reward=False,
+        )
+
+
+class LavaWorld5x7StochRewards(BaseGrid):
+    """"""
+
+    def __init__(self):
+        super().__init__(
+            nS=35,
+            nA=4,
+            rows=5,
+            cols=7,
+            start=[4, 0],
+            goal=[4, 6],
+            final_reward=10,
+            lava_cells=[[4, 2], [4, 3], [4, 4], [0, 2], [0, 3], [0, 4]],
+            p_forward=1,
+            stoch_reward=True,
         )
 
 
@@ -432,6 +452,7 @@ class LavaWorld13x15Determ(BaseGrid):
                 [0, 12],
             ],
             p_forward=1.0,
+            stoch_reward=False,
         )
 
 
@@ -500,6 +521,74 @@ class LavaWorld13x15StochMovement(BaseGrid):
             ],
             p_forward=0.8,
             stoch_reward=False,
+        )
+
+
+class LavaWorld13x15StochRewards(BaseGrid):
+    """"""
+
+    def __init__(self):
+        super().__init__(
+            nS=195,
+            nA=4,
+            rows=13,
+            cols=15,
+            start=[12, 0],
+            goal=[12, 14],
+            final_reward=34,
+            lava_cells=[
+                [12, 2],
+                [12, 3],
+                [12, 4],
+                [12, 5],
+                [12, 6],
+                [12, 7],
+                [12, 8],
+                [12, 9],
+                [12, 10],
+                [12, 11],
+                [12, 12],
+                [11, 7],
+                [10, 7],
+                [9, 7],
+                [8, 2],
+                [8, 3],
+                [8, 4],
+                [8, 5],
+                [8, 6],
+                [8, 7],
+                [8, 8],
+                [8, 9],
+                [8, 10],
+                [8, 11],
+                [8, 12],
+                [7, 7],
+                [5, 7],
+                [4, 2],
+                [4, 3],
+                [4, 4],
+                [4, 5],
+                [4, 6],
+                [4, 7],
+                [4, 8],
+                [4, 9],
+                [4, 10],
+                [4, 11],
+                [4, 12],
+                [0, 2],
+                [0, 3],
+                [0, 4],
+                [0, 5],
+                [0, 6],
+                [0, 7],
+                [0, 8],
+                [0, 9],
+                [0, 10],
+                [0, 11],
+                [0, 12],
+            ],
+            p_forward=1,
+            stoch_reward=True,
         )
 
 
