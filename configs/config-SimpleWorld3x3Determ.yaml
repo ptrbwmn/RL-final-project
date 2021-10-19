@@ -1,11 +1,11 @@
 name: "lava"
-seeds: [1] #,2,3,4,5]
+seeds: 1000 
 env: "SimpleWorld3x3Determ" # "LavaWorld13x15Determ" # "LavaWorld5x7StochMovement" # ["WindyGridworldEnv", "EmptyDenseEnv5x5"]
 policy: "EpsilonGreedy" # ["EpsilonGreedy"]
 epsilon_0: .5       # starting value of epsilon eps_0
-epsilon_decay: 0.1  # this is parameter beta in eps = eps_0 / n(s)^beta. If beta = 0 we have a fixed epsilon
-alpha_0: 0.4        # starting value of alpha
-alpha_decay: 0.1    # parameter omega in alpha = alpha / n(s,a)^omega. If omega = 0 we have a fixed alpha
+epsilon_decay: 1.  # this is parameter beta in eps = eps_0 / n(s)^beta. If beta = 0 we have a fixed epsilon
+alpha_0: 1.        # starting value of alpha
+alpha_decay: 0.5    # parameter omega in alpha = alpha / n(s,a)^omega. If omega = 0 we have a fixed alpha
 gamma: 1
-num_iter: 2
+num_iter: 20
 metric_names: ["episode_returns","episode_lengths"] 

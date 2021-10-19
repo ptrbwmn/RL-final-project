@@ -24,7 +24,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 def multi_seed_run(config):
     #    config['seeds']=[i for i in range(10)]
-    num_seeds = len(config['seeds'])
+    num_seeds = config['seeds']
+    config['seeds'] = np.arange(num_seeds)
     num_iter = config['num_iter']
     num_metrics = len(config['metric_names'])
 
