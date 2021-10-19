@@ -2,9 +2,10 @@ name: "test"
 seeds: [0,1] #,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 env: "CliffWalkingEnv" # ["WindyGridworldEnv", "EmptyDenseEnv5x5", "CliffWalkingEnv"]
 policy: "EpsilonGreedy" # ["EpsilonGreedy"]
-epsilon: 0.1
-eps_decay: False
-alpha: 0.5
+epsilon_0: .1     # starting value of epsilon eps_0
+epsilon_decay: 0. # this is parameter beta in eps = eps_0 / n(s)^beta. If beta = 0 we have a fixed epsilon
+alpha_0: 0.5      # starting value of alpha
+alpha_decay: 0.   # parameter omega in alpha = alpha / n(s,a)^omega. If omega = 0 we have a fixed alpha
 gamma: 1
 num_iter: 10
 

@@ -33,8 +33,9 @@ def make_result_directory(config, filename):
 
 def make_dirname(config, pickle_file_name=False):
     policy = config['policy']
-    epsilon = config['epsilon']
-    alpha = config['alpha']
+    epsilon = config['epsilon_0']
+    epsilon_decay = config['epsilon_decay']
+    alpha_decay = config['alpha_decay']
     gamma = config['gamma']
     num_iter = config['num_iter']
     env = config['env']
@@ -50,9 +51,10 @@ def make_dirname(config, pickle_file_name=False):
         #add functionality to abbreviate values, e.g. Random Acquisition -> RA
         dirname = str(policy) + "_" + str(env) \
         + "_" + "numiter" + str(num_iter) \
-        + "_" + "epsilon_" + str(epsilon) \
-        + "_" + "alpha_" + str(alpha) \
-            + "_" + "gamma_" + str(gamma) \
+        + "_" + "epsilon0_" + str(epsilon) \
+        + "_" + "epsilondecay_" + str(epsilon_decay) \
+        + "_" + "alphadecay_" + str(alpha_decay) \
+        + "_" + "gamma_" + str(gamma) \
         + "." + str(timestamp).replace(" ", "_").replace(".", "_").replace(":", "-")
 
     return dirname

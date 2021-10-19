@@ -58,7 +58,7 @@ def tqdm(*args, **kwargs):
 #     return Q, episode_returns, policy
 
 
-def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5, print_episodes=False):
+def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha_0 = 0.5, alpha_decay=0., print_episodes=False):
     """
     Q-Learning algorithm: Off-policy TD control. Finds the optimal greedy policy
     while following an epsilon-greedy policy
@@ -101,6 +101,12 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5, pri
             Qnew = np.max(policy.Q[new_state])
             if done:
                 Qnew = 0
+            if alpha_decay > 0:
+                alpha = alpha_0 / policy.sa_count[start_state,start_action]**(alpha_decay)
+            else:
+                alpha = alpha_0
+            #print(alpha)
+            #input("key")
             policy.Q[start_state][start_action] = policy.Q[start_state][start_action] + alpha*(reward +
                                                                                                discount_factor*Qnew - policy.Q[start_state, start_action])
             # print(Q)
@@ -116,7 +122,7 @@ def q_learning(env, policy, Q, num_episodes, discount_factor=1.0, alpha=0.5, pri
     return policy.Q, metrics_vanilla, policy, Q_tables
 
 
-def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, alpha=0.5):
+def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, alpha_0 = 0.5, alpha_decay=0.):
     """
     Q-Learning algorithm: Off-policy TD control. Finds the optimal greedy policy
     while following an epsilon-greedy policy
@@ -154,8 +160,14 @@ def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, al
             new_state = new_step[0]
             reward = new_step[1]
             done = new_step[2]
+
             coinflip = random.randint(0, 1)
             if coinflip:
+                policy.sa_count1[start_state,start_action]+=1
+                if alpha_decay > 0:
+                    alpha = alpha_0 / policy.sa_count1[start_state,start_action]**(alpha_decay)
+                else:
+                    alpha = alpha_0
                 amax = np.argmax(policy.Q1[new_state])
                 Qmax = policy.Q2[new_state, amax]
                 if done:
@@ -163,6 +175,11 @@ def double_q_learning(env, policy, Q1, Q2, num_episodes, discount_factor=1.0, al
                 policy.Q1[start_state][start_action] = policy.Q1[start_state][start_action] + alpha*(reward +
                                                                                                      discount_factor*Qmax - policy.Q1[start_state, start_action])
             else:
+                policy.sa_count2[start_state,start_action]+=1
+                if alpha_decay > 0:
+                    alpha = alpha_0 / policy.sa_count2[start_state,start_action]**(alpha_decay)
+                else:
+                    alpha = alpha_0
                 amax = np.argmax(policy.Q2[new_state])
                 Qmax = policy.Q1[new_state, amax]
                 if done:
