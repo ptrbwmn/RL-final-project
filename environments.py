@@ -259,7 +259,7 @@ class LavaWorld5x7Determ(gym.Env):
             is_terminal = True
         # Case: goal reached
         if self.current_state == self.goal:
-            reward = +8.0
+            reward = +8.0 # So total reward for optimal policy is 0
             is_terminal = True
         return self.observation(self.current_state), reward, is_terminal, {}
 
@@ -337,7 +337,7 @@ class LavaWorld5x7StochMovement(gym.Env):
             is_terminal = True
         # Case: goal reached
         if self.current_state == self.goal:
-            reward = +10.0
+            reward = +10.0 # So total reward for optimal policy is 0
             is_terminal = True
         return self.observation(self.current_state), reward, is_terminal, {}
 
@@ -420,11 +420,11 @@ class LavaWorld13x15Determ(gym.Env):
         is_terminal = False
         # Case: you walked onto lava
         if self.current_state in self.lava_cells:
-            reward = -100000.0
+            reward = -1000.0
             is_terminal = True
         # Case: goal reached
         if self.current_state == self.goal:
-            reward = +18.0
+            reward = +26.0 # So total reward for optimal policy is 0
             is_terminal = True
         return self.observation(self.current_state), reward, is_terminal, {}
 
@@ -512,11 +512,11 @@ class LavaWorld13x15StochMovement(gym.Env):
         is_terminal = False
         # Case: you walked onto lava
         if self.current_state in self.lava_cells:
-            reward = -100000.0
+            reward = -1000.0
             is_terminal = True
         # Case: goal reached
         if self.current_state == self.goal:
-            reward = +26.0
+            reward = +34.0 # So total reward for optimal policy is 0
             is_terminal = True
         return self.observation(self.current_state), reward, is_terminal, {}
 
