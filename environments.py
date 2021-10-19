@@ -315,7 +315,10 @@ class BaseGrid(gym.Env):
 
         # 0 reward after reaching goal state
         for a in range(self.nA):
-            transitions[tuple(self.goal)][a] = [(p, tuple(self.goal), 0, True) for (p, l, r, d) in transitions[tuple(self.goal)][a]]
+            transitions[tuple(self.goal)][a] = [
+                (p, tuple(self.goal), 0, True)
+                for (p, l, r, d) in transitions[tuple(self.goal)][a]
+            ]
 
         return transitions
 
