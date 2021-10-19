@@ -312,6 +312,11 @@ class BaseGrid(gym.Env):
                     transitions[(r, c)][a].append(
                         (loc_prob / len(rewards), new_loc, reward, done)
                     )
+
+        # 0 reward after reaching goal state
+        for a in range(self.nA):
+            transitions[tuple(self.goal)][a] = [(p, tuple(self.goal), 0, True) for (p, l, r, d) in transitions[tuple(self.goal)][a]]
+
         return transitions
 
     def step(self, action):
@@ -592,7 +597,7 @@ class LavaWorld13x15StochRewards(BaseGrid):
         )
 
 
-class SimpleWorld3x3Determ(gym.Env):
+class SimpleWorld3x3Determ(BaseGrid):
     """"""
 
     def __init__(self):
