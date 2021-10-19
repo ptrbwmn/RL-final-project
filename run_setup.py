@@ -1,10 +1,7 @@
 from environments import WindyGridworldEnv, BasicEnv2, CliffWalkingEnv,\
-        LavaWorld5x7Determ, LavaWorld5x7StochMovement, LavaWorld5x7StochRewards,\
-        LavaWorld13x15Determ, LavaWorld13x15StochMovement, LavaWorld13x15StochRewards,\
-        SimpleWorld3x3Determ, SimpleWorld3x3StochMovement, SimpleWorld3x3StochRewards
-from env_dense import EmptyEnvDense5x5
-from env_lava_det import LavaDetEnv9x7
-from env_lava_stoch import LavaStoch80Env9x7
+    LavaWorld5x7Determ, LavaWorld5x7StochMovement, LavaWorld5x7StochRewards,\
+    LavaWorld13x15Determ, LavaWorld13x15StochMovement, LavaWorld13x15StochRewards,\
+    SimpleWorld3x3Determ, SimpleWorld3x3StochMovement, SimpleWorld3x3StochRewards
 from policy import EpsilonGreedyPolicy, EpsilonGreedyPolicy_Double_Q
 from q_learning import q_learning, double_q_learning
 import gym
@@ -12,7 +9,7 @@ import numpy as np
 # from utils import get_q_value
 
 
-def run_setup(config, q_learning_variant):  
+def run_setup(config, q_learning_variant):
     policy = config['policy']
     epsilon_0 = config['epsilon_0']
     epsilon_decay = config['epsilon_decay']
@@ -53,18 +50,21 @@ def run_setup(config, q_learning_variant):
         env = SimpleWorld3x3StochRewards()
     else:
         raise NotImplementedError
-    
+
     if policy == "EpsilonGreedy":
         if q_learning_variant == "vanilla":
             Q = np.zeros((env.nS, env.nA))
             policy = EpsilonGreedyPolicy(Q, epsilon_0, epsilon_decay)
-            Q_table, metrics, policy, Q_tables = q_learning(env, policy, Q, num_iter, discount_factor=gamma, alpha_0 = alpha_0, alpha_decay=alpha_decay)
+            Q_table, metrics, policy, Q_tables = q_learning(
+                env, policy, Q, num_iter, discount_factor=gamma, alpha_0=alpha_0, alpha_decay=alpha_decay)
             return Q_table, np.array(metrics), policy, Q_tables, env
         elif q_learning_variant == "double":
             Q1 = np.zeros((env.nS, env.nA))
             Q2 = np.zeros((env.nS, env.nA))
-            policy = EpsilonGreedyPolicy_Double_Q(Q1, Q2, epsilon_0, epsilon_decay)
-            Q_table1, Q_table2, metrics, policy, Q_tables= double_q_learning(env, policy, Q1, Q2, num_iter,  discount_factor=gamma, alpha_0 = alpha_0, alpha_decay=alpha_decay)
+            policy = EpsilonGreedyPolicy_Double_Q(
+                Q1, Q2, epsilon_0, epsilon_decay)
+            Q_table1, Q_table2, metrics, policy, Q_tables = double_q_learning(
+                env, policy, Q1, Q2, num_iter,  discount_factor=gamma, alpha_0=alpha_0, alpha_decay=alpha_decay)
             return Q_table1, Q_table2, np.array(metrics), policy, Q_tables, env
         else:
             raise NotImplementedError

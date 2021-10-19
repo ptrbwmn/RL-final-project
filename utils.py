@@ -112,7 +112,18 @@ def SaveResults(vanilla_Q_learning, double_Q_learning, metric_names, dirname, co
     b_file.close()
 
    #save plots
-    SavePlot(vanilla_Q_learning, double_Q_learning, metric_names,name,dirname,config,last_Q_tables_vanilla[len(last_Q_tables_vanilla)-1],env,smooth=False)
+    SavePlot(
+        vanilla_Q_learning, 
+        double_Q_learning, 
+        metric_names,
+        name,
+        dirname,
+        config,
+        last_Q_tables_vanilla[len(last_Q_tables_vanilla)-1],
+        last_Q_tables_double[len(last_Q_tables_double)-1],
+        env,
+        smooth=False
+    )
 
     # Save YAML file
  #   results = {key: str(val) for key, val in results.items()}
