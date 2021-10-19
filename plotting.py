@@ -10,7 +10,7 @@ def running_mean(vals, n=1):
     cumvals = np.array(vals).cumsum()
     return (cumvals[n:] - cumvals[:-n]) / n
 
-def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname, config, Q_table, env, smooth=False):
+def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname, config, Q_table, Q_tables_double, env, smooth=False):
     _, metrics_vanilla, _, _  = vanilla_Q_learning
     _, _, metrics_double, _, _ = double_Q_learning
 
@@ -59,7 +59,17 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     # print(Q_table)
     plt.imshow(V_table[::-1][:], vmin=-30)
     plt.colorbar()
-    plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap" + ".png")
+    plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap_vanilla" + ".png")
+    plt.clf()
+
+    # Construct V-table for Double Q-learning
+    Q1 = Q_tables_double["Q1"]
+    Q2 = Q_tables_double["Q2"]
+    Q_double = (Q1 + Q2) / 2
+    V_table = np.max(Q_double,axis=1).reshape(rows,cols)
+    plt.imshow(V_table[::-1][:], vmin=-30)
+    plt.colorbar()
+    plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap_double" + ".png")
     plt.clf()
 
     plt.xlim((0,cols))

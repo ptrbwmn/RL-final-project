@@ -1,7 +1,4 @@
 from environments import WindyGridworldEnv, BasicEnv2, CliffWalkingEnv, LavaWorld5x7Determ, LavaWorld5x7StochMovement, LavaWorld13x15Determ, LavaWorld13x15StochMovement, SimpleWorld3x3Determ, SimpleWorld3x3StochMovement, SimpleWorld3x3StochRewards
-from env_dense import EmptyEnvDense5x5
-from env_lava_det import LavaDetEnv9x7
-from env_lava_stoch import LavaStoch80Env9x7
 from policy import EpsilonGreedyPolicy, EpsilonGreedyPolicy_Double_Q
 from q_learning import q_learning, double_q_learning
 import gym
