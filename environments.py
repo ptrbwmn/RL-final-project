@@ -1,5 +1,6 @@
 import sys
 from copy import deepcopy
+from itertools import product
 
 import gym
 import numpy as np
@@ -212,11 +213,18 @@ class BaseGrid(gym.Env):
     # There is no renderization yet
     # metadata = {'render.modes': ['human']}
 
-    def observation(self, state):
-        return state[0] * self.cols + state[1]
-
     def __init__(
-        self, nS, nA, rows, cols, start, goal, final_reward, lava_cells, p_forward
+        self,
+        nS,
+        nA,
+        rows,
+        cols,
+        start,
+        goal,
+        final_reward,
+        lava_cells,
+        p_forward,
+        stoch_reward=False,
     ):
         self.nS = nS
         self.nA = nA
@@ -227,6 +235,8 @@ class BaseGrid(gym.Env):
         self.final_reward = final_reward
         self.lava_cells = lava_cells
         self.p_forward = p_forward
+        self.stoch_reward = stoch_reward
+
         self.current_state = None
 
         # There are four actions: up, down, left and right
@@ -234,6 +244,12 @@ class BaseGrid(gym.Env):
 
         # observation is the x, y coordinate of the grid
         self.observation_space = spaces.Discrete(self.rows * self.cols)
+
+        # transition_probabilities
+        self.P = self._get_transitions()
+
+    def observation(self, state):
+        return state[0] * self.cols + state[1]
 
     def get_state_color(self, state_number):
         if state_number in []:
@@ -247,41 +263,65 @@ class BaseGrid(gym.Env):
         else:
             return "white"
 
-    def step(self, action):
-        new_state = deepcopy(self.current_state)
-
-        pf = self.p_forward
-        move_distortion = np.random.choice(
-            [0, 1, 3], p=[pf, (1 - pf) / 2, (1 - pf) / 2]
-        )
-        action = (action + move_distortion) % 4
-
-        if action == 0:  # up
-            new_state[0] = min(new_state[0] + 1, self.rows - 1)
-        elif action == 1:  # right
-            new_state[1] = min(new_state[1] + 1, self.cols - 1)
-        elif action == 2:  # down
-            new_state[0] = max(new_state[0] - 1, 0)
-        elif action == 3:  # left
-            new_state[1] = max(new_state[1] - 1, 0)
+    def _new_loc(self, r, c, action):
+        if action == UP:  # 0
+            r2 = min(r + 1, self.rows - 1)
+            return [r2, c]
+        elif action == RIGHT:  # 1
+            c2 = min(c + 1, self.cols - 1)
+            return [r, c2]
+        elif action == DOWN:  # 2
+            r2 = max(r - 1, 0)
+            return [r2, c]
+        elif action == LEFT:  # 3
+            c2 = max(c - 1, 0)
+            return [r, c2]
         else:
             raise Exception("Invalid action.")
+
+    def _get_transitions(self):
+        """transition matrix"""
+        # initialise
+        transitions = {
+            (r, c): {a: [] for a in range(self.nA)}
+            for r, c in product(range(self.rows), range(self.cols))
+        }
+
+        # loop over state/action pairs
+        for r, c, a in product(range(self.rows), range(self.cols), range(self.nA)):
+
+            possible_a = [(a + d) % 4 for d in [-1, 0, 1]]
+            prob_side = (1 - self.p_forward) / 2
+            probs = [prob_side, self.p_forward, prob_side]
+            new_locs = [self._new_loc(r, c, pa) for pa in possible_a]
+
+            if self.stoch_reward:
+                rewards = [-12, 10]
+            else:
+                rewards = [-1]
+
+            for new_loc, loc_prob in zip(new_locs, probs):
+                for reward in rewards:
+                    done = False
+                    if new_loc in self.lava_cells:
+                        reward = -1000
+                        done = True
+                    if new_loc == self.goal:
+                        reward = self.final_reward
+                        done = True
+                    transitions[(r, c)][a].append(
+                        (loc_prob / len(rewards), new_loc, reward, done)
+                    )
+        return transitions
+
+    def step(self, action):
+        next_steps = self.P[tuple(self.current_state)][action]
+        probs = [p for p, _, _, _ in next_steps]
+        chosen = np.random.choice(range(len(next_steps)), p=probs)
+        _, new_state, reward, is_terminal = next_steps[chosen]
+
         self.current_state = new_state
-
-        reward = -1.0
-        is_terminal = False
-
-        # Case: you walked onto lava
-        if self.current_state in self.lava_cells:
-            reward = -1000.0
-            is_terminal = True
-
-        # Case: goal reached
-        if self.current_state == self.goal:
-            reward = self.final_reward
-            is_terminal = True
-
-        return self.observation(self.current_state), reward, is_terminal, {}
+        return self.observation(new_state), reward, is_terminal, {}
 
     def reset(self):
         self.current_state = self.start
@@ -459,6 +499,7 @@ class LavaWorld13x15StochMovement(BaseGrid):
                 [0, 12],
             ],
             p_forward=0.8,
+            stoch_reward=False,
         )
 
 
