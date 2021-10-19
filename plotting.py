@@ -69,18 +69,17 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
             state_number = j*cols+i
             state_color = env.get_state_color(state_number)
             plt.gca().add_patch(Rectangle((i,j),1,1,linewidth=1,edgecolor='r',facecolor=state_color))
-            max_action = np.argmax(Q_table[state_number])
+            #max_action = np.argmax(Q_table[state_number])
+            max_actions,  = np.where(Q_table[state_number] == np.max(Q_table[state_number]))
             if state_color in ["white", "blue"]:
-                if max_action == 1:
+                if 1 in max_actions:
                     plt.arrow(i+0.5, j+0.5, 0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-                elif max_action == 2:
+                if 2 in max_actions:
                     plt.arrow(i+0.5, j+0.5, 0, -0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-                elif max_action == 3:
+                if 3 in max_actions:
                     plt.arrow(i+0.5, j+0.5, -0.45, 0, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-                elif max_action == 0:
+                if 0 in max_actions:
                     plt.arrow(i+0.5, j+0.5, 0, 0.45, width=0.04,length_includes_head=True, color=(0.1,0.1,0.1,1))
-                else:
-                    raise NotImplementedError
     # plt.colorbar()
     
 #    mgr = plt.get_current_fig_manager()
