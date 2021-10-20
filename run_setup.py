@@ -1,7 +1,9 @@
 from environments import WindyGridworldEnv, BasicEnv2, CliffWalkingEnv,\
     LavaWorld5x7Determ, LavaWorld5x7StochMovement, LavaWorld5x7StochRewards,\
     LavaWorld13x15Determ, LavaWorld13x15StochMovement, LavaWorld13x15StochRewards,\
-    SimpleWorld3x3Determ, SimpleWorld3x3StochMovement, SimpleWorld3x3StochRewards
+    SimpleWorld3x3Determ, SimpleWorld3x3StochMovement, SimpleWorld3x3StochRewards, \
+    SimpleWorld15x15Determ, SimpleWorld15x15StochMovement, SimpleWorld15x15StochRewards
+    
 from policy import EpsilonGreedyPolicy, EpsilonGreedyPolicy_Double_Q
 from q_learning import q_learning, double_q_learning
 import gym
@@ -48,6 +50,13 @@ def run_setup(config, q_learning_variant):
         env = SimpleWorld3x3StochMovement()
     elif env == "SimpleWorld3x3StochRewards":
         env = SimpleWorld3x3StochRewards()
+    elif env == "SimpleWorld15x15Determ":
+        env = SimpleWorld15x15Determ()
+    elif env == "SimpleWorld15x15StochMovement":
+        env = SimpleWorld15x15StochMovement()
+    elif env == "SimpleWorld15x15StochRewards":
+        env = SimpleWorld15x15StochRewards()
+
     else:
         raise NotImplementedError
 

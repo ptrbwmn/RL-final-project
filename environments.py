@@ -611,7 +611,7 @@ class SimpleWorld3x3Determ(BaseGrid):
             cols=3,
             start=[2, 0],
             goal=[0, 2],
-            final_reward=10,
+            final_reward=3,
             lava_cells=[],
             p_forward=1,
             stoch_reward=False,
@@ -629,7 +629,7 @@ class SimpleWorld3x3StochMovement(BaseGrid):
             cols=3,
             start=[2, 0],
             goal=[0, 2],
-            final_reward=10,
+            final_reward=3,
             lava_cells=[],
             p_forward=0.8,
             stoch_reward=False,
@@ -647,10 +647,61 @@ class SimpleWorld3x3StochRewards(BaseGrid):
             cols=3,
             start=[2, 0],
             goal=[0, 2],
-            final_reward=5,
+            final_reward=3,
             lava_cells=[],
             p_forward=1,
             stoch_reward=True,
         )
 
-        # TODO: why is final_reward 5 here?
+class SimpleWorld15x15Determ(BaseGrid):
+    """"""
+
+    def __init__(self):
+        super().__init__(
+            nS=15*15,
+            nA=4,
+            rows=15,
+            cols=15,
+            start=[14, 0],
+            goal=[0, 14],
+            final_reward=27,
+            lava_cells=[],
+            p_forward=1,
+            stoch_reward=False,
+        )
+
+
+class SimpleWorld15x15StochMovement(BaseGrid):
+    """"""
+
+    def __init__(self):
+        super().__init__(
+            nS=15*15,
+            nA=4,
+            rows=15,
+            cols=15,
+            start=[14, 0],
+            goal=[0, 14],
+            final_reward=27,
+            lava_cells=[],
+            p_forward=0.8,
+            stoch_reward=False,
+        )
+
+
+class SimpleWorld15x15StochRewards(BaseGrid):
+    """"""
+
+    def __init__(self):
+        super().__init__(
+            nS=15*15,
+            nA=4,
+            rows=15,
+            cols=15,
+            start=[14, 0],
+            goal=[0, 14],
+            final_reward=27,
+            lava_cells=[],
+            p_forward=1,
+            stoch_reward=True,
+        )
