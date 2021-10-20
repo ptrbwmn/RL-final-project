@@ -59,7 +59,9 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     rows = env.rows
     V_table = np.max(Q_table, axis=1).reshape(rows, cols)
     # print(Q_table)
-    plt.imshow(V_table[::-1][:], vmin=-30)
+    vmin = env.final_reward * -1.2
+    vmax = env.final_reward
+    plt.imshow(V_table[::-1][:], vmin=vmin, vmax=vmax)  # -30)
     plt.colorbar()
     plt.savefig(dirname + "/" + name + "_" +
                 "V_table_heatmap_vanilla" + ".png")
@@ -70,7 +72,9 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     Q2 = Q_tables_double["Q2"]
     Q_double = (Q1 + Q2) / 2
     V_table = np.max(Q_double, axis=1).reshape(rows, cols)
-    plt.imshow(V_table[::-1][:], vmin=-30)
+    vmin = env.final_reward * -1.2
+    vmax = env.final_reward
+    plt.imshow(V_table[::-1][:], vmin=vmin, vmax=vmax)  # -30)
     plt.colorbar()
     plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap_double" + ".png")
     plt.clf()
