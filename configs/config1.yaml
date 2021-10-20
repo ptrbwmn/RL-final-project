@@ -1,5 +1,5 @@
 name: "test"
-seeds: [0,1] #,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+seeds: 20 # THIS SHOULD BE THE NUMBER OF SEEDS, NOT THE LIST WITH SEEDS!
 env: "CliffWalkingEnv" # ["WindyGridworldEnv", "EmptyDenseEnv5x5", "CliffWalkingEnv"]
 policy: "EpsilonGreedy" # ["EpsilonGreedy"]
 epsilon_0: .1     # starting value of epsilon eps_0
