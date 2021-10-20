@@ -1,5 +1,5 @@
 name: "lava"
-seeds: [1] #,2,3,4,5]
+seeds: 20 # THIS SHOULD BE THE NUMBER OF SEEDS, NOT THE LIST WITH SEEDS!
 env: "SimpleWorld3x3Determ" # "LavaWorld13x15Determ" # "LavaWorld5x7StochMovement" # ["WindyGridworldEnv", "EmptyDenseEnv5x5"]
 policy: "EpsilonGreedy" # ["EpsilonGreedy"]
 epsilon_0: .5       # starting value of epsilon eps_0

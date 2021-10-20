@@ -30,7 +30,7 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
         if smooth:
             raise NotImplementedError
         else:
-            plt.plot(xs, ys, label=metric_names[metric_idx]+" vanilla")
+            plt.plot(xs, ys, label="vanilla")
             plt.fill_between(xs, lower_std, upper_std, alpha=0.4)
 
         # double
@@ -43,12 +43,12 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
         if smooth:
             raise NotImplementedError
         else:
-            plt.plot(xs, ys, label=metric_names[metric_idx]+" double")
+            plt.plot(xs, ys, label="double")
             plt.fill_between(xs, lower_std, upper_std, alpha=0.4)
 
         # save&wipe
         Path(dirname).mkdir(parents=True, exist_ok=True)
-        plt.xlabel("steps")
+        plt.xlabel("Episode")
         plt.ylabel(metric_name)
         plt.legend()
         plt.savefig(dirname + "/" + name + "_" +
@@ -62,6 +62,7 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     vmin = env.final_reward * -1.2
     vmax = env.final_reward
     plt.imshow(V_table[::-1][:], vmin=vmin, vmax=vmax)  # -30)
+    plt.title("State values after training Vanilla Q-learning")
     plt.colorbar()
     plt.savefig(dirname + "/" + name + "_" +
                 "V_table_heatmap_vanilla" + ".png")
@@ -75,12 +76,14 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     vmin = env.final_reward * -1.2
     vmax = env.final_reward
     plt.imshow(V_table[::-1][:], vmin=vmin, vmax=vmax)  # -30)
+    plt.title("State values after training Double Q-learning")
     plt.colorbar()
     plt.savefig(dirname + "/" + name + "_" + "V_table_heatmap_double" + ".png")
     plt.clf()
 
     plt.xlim((0, cols))
     plt.ylim((0, rows))
+    plt.title("Greedy policy after training Vanilla Q-learning")
     for i in range(cols):
         for j in range(rows):
             state_number = j*cols+i
@@ -115,6 +118,7 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     # Now make policy chart for Double-Q learning
     plt.xlim((0, cols))
     plt.ylim((0, rows))
+    plt.title("Greedy policy after training Double Q-learning")
     for i in range(cols):
         for j in range(rows):
             state_number = j*cols+i
@@ -143,10 +147,10 @@ def SavePlot(vanilla_Q_learning, double_Q_learning, metric_names, name, dirname,
     plt.clf()
 
     plt.plot(metrics_vanilla_avgperstep, label="vanilla")
-    plt.title("average return per step over the episodes")
+    plt.title("Average return per step over the episodes")
     plt.plot(metrics_double_avgperstep, label="double")
-    plt.ylabel("average return per step")
-    plt.xlabel("episode")
+    plt.ylabel("Average return per step")
+    plt.xlabel("Episode")
     plt.legend()
     plt.savefig(dirname + '/' + name + '_' + 'avgperstep.png')
     # plt.show()
