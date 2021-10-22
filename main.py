@@ -1,19 +1,9 @@
 import numpy as np
-from collections import defaultdict
-
-import sys
-import time
 
 import yaml
-import os
 import sys
 import time
-from datetime import datetime
-import shutil
-from pathlib import Path
 import copy
-
-from matplotlib import pyplot as plt
 
 from run_setup import run_setup
 from utils import make_result_directory, seed_everything, SaveResults
@@ -63,14 +53,7 @@ def multi_seed_run(config):
     metrics_double_episode_lengths = metrics_double_all[:, 1, :]
     metrics_double_avgperstep = np.sum(
         metrics_double_episode_returns, axis=0)/np.sum(metrics_double_episode_lengths, axis=0)
-    # plt.plot(metrics_vanilla_avgperstep,label="vanilla")
-    # plt.title("average return per step over the episodes")
-    # plt.plot(metrics_double_avgperstep,label="double")
-    # plt.ylabel("average return per step")
-    # plt.xlabel("episode")
-    # plt.legend()
-    # plt.show()
-    # plt.clf()
+
     metrics_vanilla = [metrics_vanilla_mean, metrics_vanilla_std]
     metrics_double = [metrics_double_mean, metrics_double_std]
 
@@ -103,9 +86,6 @@ if __name__ == '__main__':
 
         vanilla_Q_learning, double_Q_learning, env = \
             multi_seed_run(config)
-
-        # print(f'AREA UNDER episode_lengths CURVE average: {np.mean(np.array(all_AUC_episode_lengths))}')
-        # print(f'AREA UNDER episode_returns CURVE average: {np.mean(np.array(all_AUC_episode_returns))}')
 
         print("SAVING RESULTS")
         SaveResults(vanilla_Q_learning, double_Q_learning,
