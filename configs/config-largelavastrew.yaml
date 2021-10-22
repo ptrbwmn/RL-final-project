@@ -1,0 +1,11 @@
+name: "largelava"
+seeds: 10 # THIS SHOULD BE THE NUMBER OF SEEDS, NOT THE LIST WITH SEEDS!
+env: "LavaWorld13x15StochRewards"
+policy: "EpsilonGreedy" # ["EpsilonGreedy"]
+epsilon_0: 1.0      # starting value of epsilon eps_0
+epsilon_decay: 0.8  # this is parameter beta in eps = eps_0 / n(s)^beta. If beta = 0 we have a fixed epsilon
+alpha_0: 0.5        # starting value of alpha
+alpha_decay: 0    # parameter omega in alpha = alpha / n(s,a)^omega. If omega = 0 we have a fixed alpha
+gamma: 1
+num_iter: 1000
+metric_names: ["episode_returns","episode_lengths"] 
