@@ -10,6 +10,7 @@ class EpsilonGreedyPolicy(object):
         self.eps_decay = eps_decay
         self.state_count = np.zeros((Q.shape[0])).astype(np.float32)
         self.sa_count = np.zeros(Q.shape).astype(np.float32)
+
     def sample_action(self, obs):
         """
         This method takes a state as input and returns an action sampled from this policy.  
@@ -48,6 +49,7 @@ class EpsilonGreedyPolicy_Double_Q(object):
         self.state_count = np.zeros((Q1.shape[0])).astype(np.float32)
         self.sa_count1 = np.zeros(Q1.shape).astype(np.float32)
         self.sa_count2 = np.zeros(Q1.shape).astype(np.float32)
+        
     def sample_action(self, obs):
         """
         This method takes a state as input and returns an action sampled from this policy.  

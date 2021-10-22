@@ -1,4 +1,4 @@
-from environments import WindyGridworldEnv, BasicEnv2, CliffWalkingEnv,\
+from environments import \
     LavaWorld5x7Determ, LavaWorld5x7StochMovement, LavaWorld5x7StochRewards,\
     LavaWorld13x15Determ, LavaWorld13x15StochMovement, LavaWorld13x15StochRewards,\
     SimpleWorld3x3Determ, SimpleWorld3x3StochMovement, SimpleWorld3x3StochRewards, \
@@ -6,9 +6,8 @@ from environments import WindyGridworldEnv, BasicEnv2, CliffWalkingEnv,\
     
 from policy import EpsilonGreedyPolicy, EpsilonGreedyPolicy_Double_Q
 from q_learning import q_learning, double_q_learning
-import gym
+
 import numpy as np
-# from utils import get_q_value
 
 
 def run_setup(config, q_learning_variant):
@@ -21,19 +20,8 @@ def run_setup(config, q_learning_variant):
     num_iter = config['num_iter']
 
     env = config['env']
-    if env == "WindyGridworldEnv":
-        env = WindyGridworldEnv()
-    elif env == "EmptyDenseEnv5x5":
-        env = gym.make('MiniGrid-EmptyDense-5x5-v0')
-    elif env == "CliffWalkingEnv":
-        env = CliffWalkingEnv()
-    elif env == "LavaDetEnv9x7":
-        env = gym.make('MiniGrid-LavaDet-9x7-v0')
-    elif env == "LavaStoch80Env9x7":
-        env = gym.make('MiniGrid-LavaStoch80-9x7-v0')
-    elif env == "LavaWorld5x7Determ":
+    if env == "LavaWorld5x7Determ":
         env = LavaWorld5x7Determ()
-        # q, q_coord = get_q_value(env, 'LavaWorld5x7Determ', gamma, save_dir)
     elif env == "LavaWorld5x7StochMovement":
         env = LavaWorld5x7StochMovement()
     elif env == "LavaWorld5x7StochRewards":
